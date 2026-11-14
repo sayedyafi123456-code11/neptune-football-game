@@ -237,9 +237,9 @@ portraitImage.onload=()=>{
  const tex=new THREE.CanvasTexture(portraitCanvas);tex.colorSpace=THREE.SRGBColorSpace;
  const frame=mat(0x102b25,.35,.35),sideMat=mat(0x102b25,.5,.2);
  const screen=new THREE.Mesh(new THREE.BoxGeometry(5.2,6.5,.3),[sideMat,sideMat,sideMat,sideMat,new THREE.MeshStandardMaterial({map:tex,emissive:0x173b2b,emissiveIntensity:.35})]);
- screen.position.set(7,3.65,-21.6);screen.castShadow=true;scene.add(screen);
+ screen.position.set(39.5,3.65,4.5);screen.rotation.y=-Math.PI/2;screen.castShadow=true;scene.add(screen);
  const border=new THREE.Mesh(new THREE.BoxGeometry(5.42,6.72,.12),new THREE.MeshBasicMaterial({color:0xc9ff62}));
- border.position.set(7,3.65,-21.79);scene.add(border);
+ border.position.set(39.72,3.65,4.5);border.rotation.y=-Math.PI/2;scene.add(border);
  // Keep Naslen's LED screen and pitch in their original positions and dimensions.
  screen.userData.keepFacingCamera=true;border.userData.keepFacingCamera=true;
 };
@@ -264,9 +264,9 @@ dulquerImage.onload=()=>{
  const tex=new THREE.CanvasTexture(dulquerCanvas);tex.colorSpace=THREE.SRGBColorSpace;
  const sideMat=mat(0x102b25,.5,.2);
  const screen=new THREE.Mesh(new THREE.BoxGeometry(5.2,6.5,.3),[sideMat,sideMat,sideMat,sideMat,new THREE.MeshStandardMaterial({map:tex,emissive:0x173b2b,emissiveIntensity:.65}),sideMat]);
- screen.position.set(-7,3.65,-21.6);screen.castShadow=true;scene.add(screen);
+ screen.position.set(39.5,3.65,-4.5);screen.rotation.y=-Math.PI/2;screen.castShadow=true;scene.add(screen);
  const border=new THREE.Mesh(new THREE.BoxGeometry(5.42,6.72,.12),new THREE.MeshBasicMaterial({color:0xc9ff62}));
- border.position.set(-7,3.65,-21.38);scene.add(border);
+ border.position.set(39.72,3.65,-4.5);border.rotation.y=-Math.PI/2;scene.add(border);
 };
 dulquerImage.src=dulquerPhoto;
 
