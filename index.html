@@ -191,7 +191,7 @@ for(const z of [-13,0,13]){makeAdBoard('DULQUER SALMAAN · NEPTUNE FAN EDITION',
 
 
 // Second portrait LED screen using the photo supplied by the user.
-// It faces the pitch from the opposite touchline; the existing Naslen screen stays unchanged.
+// It sits immediately beside Naslen's screen on the same touchline, facing the pitch.
 const dulquerPhoto='data:image/jpeg;base64,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';
 const dulquerCanvas=document.createElement('canvas');dulquerCanvas.width=512;dulquerCanvas.height=640;
 const dulquerCtx=dulquerCanvas.getContext('2d');dulquerCtx.fillStyle='#071b1a';dulquerCtx.fillRect(0,0,512,640);
@@ -205,10 +205,10 @@ dulquerImage.onload=()=>{
  dulquerCtx.fillText('DULQUER SALMAAN',256,612);
  const tex=new THREE.CanvasTexture(dulquerCanvas);tex.colorSpace=THREE.SRGBColorSpace;
  const sideMat=mat(0x102b25,.5,.2);
- const screen=new THREE.Mesh(new THREE.BoxGeometry(5.2,6.5,.3),[sideMat,sideMat,sideMat,sideMat,sideMat,new THREE.MeshStandardMaterial({map:tex,emissive:0x173b2b,emissiveIntensity:.35})]);
+ const screen=new THREE.Mesh(new THREE.BoxGeometry(5.2,6.5,.3),[sideMat,sideMat,sideMat,sideMat,new THREE.MeshStandardMaterial({map:tex,emissive:0x173b2b,emissiveIntensity:.65}),sideMat]);
  screen.position.set(6,3.65,-21.6);screen.castShadow=true;scene.add(screen);
  const border=new THREE.Mesh(new THREE.BoxGeometry(5.42,6.72,.12),new THREE.MeshBasicMaterial({color:0xc9ff62}));
- border.position.set(6,3.65,-21.79);scene.add(border);
+ border.position.set(6,3.65,-21.38);scene.add(border);
 };
 dulquerImage.src=dulquerPhoto;
 
