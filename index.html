@@ -114,7 +114,9 @@ portraitImage.onload=()=>{
  for(const item of scene.children){
   if(item.userData.keepFacingCamera || item.isLight) continue;
   item.position.applyMatrix4(halfTurn);
-  item.rotation.y+=Math.PI;
+  // Keep the flat grass/field markings facing upward; rotate upright objects and goal frames.
+  const isPitchSurface=Math.abs(item.rotation.x+Math.PI/2)<0.02 && item.position.y<0.2;
+  if(!isPitchSurface) item.rotation.y+=Math.PI;
  }
 };
 portraitImage.src=naslenPhoto;
