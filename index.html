@@ -108,15 +108,8 @@ portraitImage.onload=()=>{
  screen.position.set(0,3.65,-21.6);screen.castShadow=true;scene.add(screen);
  const border=new THREE.Mesh(new THREE.BoxGeometry(5.42,6.72,.12),new THREE.MeshBasicMaterial({color:0xc9ff62}));
  border.position.set(0,3.65,-21.79);scene.add(border);
- // Keep Naslen's LED screen fixed; rotate the pitch and stadium layout 180 degrees beneath the unchanged camera.
+ // Keep Naslen's LED screen and pitch in their original positions and dimensions.
  screen.userData.keepFacingCamera=true;border.userData.keepFacingCamera=true;
- const turn=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI/2);
- for(const item of scene.children){
-  if(item.userData.keepFacingCamera || item.isLight) continue;
-  item.position.applyQuaternion(turn);
-  item.quaternion.premultiply(turn);
-  item.updateMatrix();
- }
 };
 portraitImage.src=naslenPhoto;
 // Pitch-side LED advertising screens: fan-made actor features, around the touchlines
