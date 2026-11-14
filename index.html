@@ -132,7 +132,7 @@ if(ball.position.x>32||ball.position.x< -32)ballVel.x*=-.7;
 if(ball.position.z>19.7&&Math.abs(ball.position.x)<4)score('home');else if(ball.position.z< -19.7&&Math.abs(ball.position.x)<4)score('away');else if(Math.abs(ball.position.z)>20){ballVel.z*=-.65;ball.position.z=Math.sign(ball.position.z)*19.7}
 seam.position.copy(ball.position);seam.rotation.z+=dt*5;
 }
-const focusX=THREE.MathUtils.clamp(ball.position.x*.22+hero.position.x*.12,-7,7);const focusZ=THREE.MathUtils.clamp(ball.position.z*.18,-4,4);const target=new THREE.Vector3(focusX,0,focusZ);camera.position.lerp(new THREE.Vector3(focusX,53,focusZ+42),.035);camera.lookAt(target);
+const focusX=THREE.MathUtils.clamp(ball.position.x*.22+hero.position.x*.12,-7,7);const focusZ=THREE.MathUtils.clamp(ball.position.z*.18,-4,4);const target=new THREE.Vector3(focusX,0,focusZ);camera.position.lerp(new THREE.Vector3(focusX,44,focusZ+34),.035);camera.lookAt(target);
 renderer.render(scene,camera)}
 requestAnimationFrame(animate);
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.7))});
