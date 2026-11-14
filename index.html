@@ -45,7 +45,7 @@
  </div>
 </div>
 <div id="toast">GOAL!</div>
-<div id="overlay"><div class="card"><div class="eyebrow">THE PITCH IS YOURS</div><h1>NEPTUNE</h1><p>Take control in an 11 vs 11 match. Broadcast-style camera, full pitch view, passing and shooting. Works on desktop and mobile.</p><button class="play" id="start">KICK OFF</button><div class="foot">MADE BY YAFI FOR NAHIYAN</div></div></div>
+<div id="overlay"><div class="card"><div class="eyebrow">THE PITCH IS YOURS</div><h1>NEPTUNE</h1><p>Play NEPTUNE with your friend. Create a room or join using the 4-digit code.</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:16px 0"><button class="play" id="createRoom">CREATE ROOM</button></div><div style="display:flex;gap:8px;justify-content:center;align-items:center"><input id="roomInput" maxlength="4" inputmode="numeric" placeholder="4-DIGIT CODE" style="width:145px;padding:13px;border-radius:12px;border:1px solid #a8ffd866;background:#061513;color:white;text-align:center;font-size:18px;letter-spacing:.2em"><button class="play" id="joinRoom" style="margin:0;padding:13px 18px">JOIN</button></div><div id="roomStatus" style="font-size:12px;color:#c9ff62;min-height:20px;margin-top:12px">Or start a local practice match.</div><button class="play" id="start">LOCAL PRACTICE</button><div class="foot">MADE BY YAFI FOR NAHIYAN</div></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 const root=document.getElementById('game');
@@ -103,5 +103,60 @@ const focusX=THREE.MathUtils.clamp(ball.position.x*.22+hero.position.x*.12,-7,7)
 renderer.render(scene,camera)}
 requestAnimationFrame(animate);
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.7))});
+</script>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+#chatPanel{display:none;position:fixed;right:16px;top:110px;width:min(290px,78vw);z-index:8;background:#061a17ed;border:1px solid #a8ffd855;border-radius:16px;padding:12px;pointer-events:auto}
+#chatLog{height:110px;overflow:auto;font-size:12px;color:#e5fff3;margin:8px 0}
+#chatRow{display:flex;gap:6px}#chatRow input{min-width:0;flex:1;padding:9px;border-radius:8px;border:1px solid #a8ffd866;background:#102b25;color:white}
+#chatRow button{border:0;border-radius:8px;padding:8px;background:#c9ff62;color:#102019;font-weight:800}
+</style>
+<div id="chatPanel"><b>NEPTUNE CHAT</b><div id="chatLog">Waiting for friend...</div><div id="chatRow"><input id="chatText" maxlength="100" placeholder="Message"><button id="sendChat">SEND</button></div></div>
+<script>
+(function(){
+ let peer=null, conn=null, isHost=false;
+ const status=document.getElementById('roomStatus');
+ const codeInput=document.getElementById('roomInput');
+ const panel=document.getElementById('chatPanel');
+ const log=document.getElementById('chatLog');
+ function say(s){status.textContent=s}
+ function addChat(who,msg){const p=document.createElement('div');p.textContent=who+': '+msg;log.appendChild(p);log.scrollTop=log.scrollHeight}
+ function connected(){
+   say('FRIEND CONNECTED! Room NEPTUNE'+(peer.id||'').replace('NEPTUNE',''));
+   panel.style.display='block';
+   conn.on('data',d=>{if(d&&d.type==='chat')addChat('FRIEND',String(d.text).slice(0,100));});
+   conn.on('close',()=>say('Friend disconnected.'));
+ }
+ document.getElementById('createRoom').onclick=()=>{
+   if(!window.Peer){say('Online service loading. Try again in a moment.');return}
+   if(peer)peer.destroy();
+   isHost=true;
+   const code=String(Math.floor(1000+Math.random()*9000));
+   codeInput.value=code;
+   say('Creating room NEPTUNE'+code+'...');
+   peer=new Peer('NEPTUNE'+code);
+   peer.on('open',()=>say('Your room code: NEPTUNE'+code+' — send this to your friend.'));
+   peer.on('connection',c=>{conn=c;conn.on('open',connected);});
+   peer.on('error',e=>say('Could not create room. Please try another code.'));
+ };
+ document.getElementById('joinRoom').onclick=()=>{
+   const code=codeInput.value.trim();
+   if(!/^\d{4}$/.test(code)){say('Enter the 4 digits after NEPTUNE.');return}
+   if(!window.Peer){say('Online service loading. Try again in a moment.');return}
+   if(peer)peer.destroy();
+   isHost=false;say('Joining NEPTUNE'+code+'...');
+   peer=new Peer();
+   peer.on('open',()=>{conn=peer.connect('NEPTUNE'+code);conn.on('open',connected);conn.on('error',()=>say('Could not connect. Check the code and try again.'));});
+   peer.on('error',()=>say('Connection failed. Check your internet and room code.'));
+ };
+ function send(){
+   const box=document.getElementById('chatText'),msg=box.value.trim();
+   if(!msg||!conn||!conn.open)return;
+   conn.send({type:'chat',text:msg});addChat('YOU',msg);box.value='';
+ }
+ document.getElementById('sendChat').onclick=send;
+ document.getElementById('chatText').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+})();
 </script>
 </body></html>
