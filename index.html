@@ -118,7 +118,8 @@ function pass(){if(!started||kickCooldown>0)return;let target=mates[0];let best=
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.style.opacity=1;setTimeout(()=>el.style.opacity=0,1200)}
 function resetBall(){ball.position.set(0,.4,0);ballVel.set(0,0,0);hero.position.set(0,8,0)}
 function score(team){if(team==='home'){home++;document.getElementById('homeScore').textContent=home;toast('GOAL! NEPTUNE')}else{away++;document.getElementById('awayScore').textContent=away;toast('RIVALS SCORE')}resetBall()}
-function beginMatch(){started=true;document.getElementById('overlay').style.display='none';toast('KICK OFF!')}\ndocument.getElementById('start').addEventListener('click',beginMatch);
+function beginMatch(){started=true;document.getElementById('overlay').style.display='none';toast('KICK OFF!')}
+document.getElementById('start').addEventListener('click',beginMatch);
 function animatePlayer(p,now){const l=p.userData.limbs;if(!l)return;const moving=p===hero?Math.min(1,Math.hypot((keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+joy.x,(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y)):0.38;const swing=Math.sin(now*.014+(p.position.x*.2))*moving*.62;l.legs[0].rotation.x=swing;l.legs[1].rotation.x=-swing;l.arms[0].rotation.x=-swing*.65;l.arms[1].rotation.x=swing*.65;}
 function clampPlayer(p){p.position.x=THREE.MathUtils.clamp(p.position.x,-30,30);p.position.z=THREE.MathUtils.clamp(p.position.z,-18,18)}
 function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;
