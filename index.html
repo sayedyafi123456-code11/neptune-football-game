@@ -28,7 +28,7 @@
 <div id="game"></div>
 <div class="hud">
  <div class="top">
-  <div><div class="brand">NEPTUNE</div><div class="sub">3D FOOTBALL EXPERIENCE</div></div>
+  <div><div class="brand">NEPTUNE</div><div class="sub">11 VS 11 · BROADCAST CAMERA</div></div>
   <div class="score">
    <div class="team">NEPTUNE<div class="num" id="homeScore">0</div></div>
    <div class="dash">:</div>
@@ -45,12 +45,12 @@
  </div>
 </div>
 <div id="toast">GOAL!</div>
-<div id="overlay"><div class="card"><div class="eyebrow">THE PITCH IS YOURS</div><h1>NEPTUNE</h1><p>A fast 3D football match. Move your player, keep possession, and score against the rivals. Works on desktop and mobile.</p><button class="play" id="start">KICK OFF</button><div class="foot">MADE BY YAFI FOR NAHIYAN</div></div></div>
+<div id="overlay"><div class="card"><div class="eyebrow">THE PITCH IS YOURS</div><h1>NEPTUNE</h1><p>Take control in an 11 vs 11 match. Broadcast-style camera, full pitch view, passing and shooting. Works on desktop and mobile.</p><button class="play" id="start">KICK OFF</button><div class="foot">MADE BY YAFI FOR NAHIYAN</div></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 const root=document.getElementById('game');
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x071c1a);scene.fog=new THREE.Fog(0x071c1a,34,85);
-const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,180);
+const camera=new THREE.PerspectiveCamera(54,innerWidth/innerHeight,.1,180);
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;root.appendChild(renderer.domElement);
 scene.add(new THREE.HemisphereLight(0xc7ffe9,0x173328,2));
 const sun=new THREE.DirectionalLight(0xe7fff0,2.6);sun.position.set(-12,25,10);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-35;sun.shadow.camera.right=35;sun.shadow.camera.top=25;sun.shadow.camera.bottom=-25;scene.add(sun);
@@ -67,8 +67,11 @@ goal(-20,-1);goal(20,1);
 const crowdMat=[mat(0x23443c),mat(0x315b50),mat(0x203d4a),mat(0x6a5141)];
 for(let i=0;i<210;i++){const a=i/210*Math.PI*2;const radius=26+(i%3)*.5;const x=Math.cos(a)*radius*1.18,z=Math.sin(a)*radius*.82;if(Math.abs(x)<34&&Math.abs(z)<22)continue;const h=.5+(i%4)*.15;const o=new THREE.Mesh(new THREE.BoxGeometry(.35,h,.35),crowdMat[i%4]);o.position.set(x,h/2-.1,z);scene.add(o)}
 function player(color,x,z){const group=new THREE.Group();const jersey=mat(color,.55);const skin=mat(0xb77d5b);const shorts=mat(0x10231f);const body=new THREE.Mesh(new THREE.CapsuleGeometry(.48,.8,4,8),jersey);body.position.y=1.25;body.castShadow=true;group.add(body);const head=new THREE.Mesh(new THREE.SphereGeometry(.28,12,10),skin);head.position.y=2.1;head.castShadow=true;group.add(head);for(const dx of [-.23,.23]){const leg=new THREE.Mesh(new THREE.CapsuleGeometry(.14,.62,3,6),shorts);leg.position.set(dx,.42,0);group.add(leg)}group.position.set(x,0,z);scene.add(group);return group}
-const hero=player(0x37e1bb,0,8);const mates=[player(0x37e1bb,-9,2),player(0x37e1bb,9,1),player(0x37e1bb,-5,-8),player(0x37e1bb,6,-9)];
-const enemies=[player(0xff765f,-8,-3),player(0xff765f,8,-3),player(0xff765f,0,-12),player(0xff765f,-13,9),player(0xff765f,13,9)];
+const hero=player(0x37e1bb,0,8);
+const mateSpots=[[-18,8],[-12,1],[-6,8],[6,8],[12,1],[18,8],[-16,-8],[-5,-13],[5,-13],[16,-8]];
+const mates=mateSpots.map(([x,z])=>player(0x37e1bb,x,z));
+const rivalSpots=[[-18,-8],[-12,-1],[-6,-8],[6,-8],[12,-1],[18,-8],[-16,8],[-5,13],[5,13],[16,8],[0,-17]];
+const enemies=rivalSpots.map(([x,z])=>player(0xff765f,x,z));
 const ball=new THREE.Mesh(new THREE.SphereGeometry(.38,20,16),ballMat);ball.castShadow=true;ball.position.set(0,.4,6);scene.add(ball);
 const seam=new THREE.Mesh(new THREE.TorusGeometry(.385,.012,4,24),mat(0x172522));seam.position.copy(ball.position);seam.rotation.x=Math.PI/2;scene.add(seam);
 const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space'){e.preventDefault();shoot()}if(e.key.toLowerCase()==='e')pass()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
@@ -88,7 +91,7 @@ function clampPlayer(p){p.position.x=THREE.MathUtils.clamp(p.position.x,-30,30);
 function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;
 if(started){time=Math.max(0,time-dt);document.getElementById('timer').textContent=String(Math.floor(time/60)).padStart(2,'0')+':'+String(Math.floor(time%60)).padStart(2,'0');kickCooldown=Math.max(0,kickCooldown-dt);
 let ix=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+joy.x;let iz=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y;const v=new THREE.Vector3(ix,0,iz);if(v.length()>1)v.normalize();const sprint=keys.shift?1.45:1;hero.position.x+=v.x*8*dt*sprint;hero.position.z+=v.z*8*dt*sprint;if(v.lengthSq()>.01)hero.rotation.y=Math.atan2(-v.x,-v.z);clampPlayer(hero);
-for(let i=0;i<mates.length;i++){const p=mates[i],t=new THREE.Vector3((i%2?1:-1)*(7+i),0,(i<2?2:-9));p.position.lerp(t,.012);p.rotation.y=0}
+for(let i=0;i<mates.length;i++){const p=mates[i],spot=mateSpots[i];const t=new THREE.Vector3(spot[0]+Math.sin(now*.00045+i)*1.2,0,spot[1]+Math.cos(now*.0004+i)*.8);p.position.lerp(t,.012);p.rotation.y=0}
 for(let i=0;i<enemies.length;i++){const p=enemies[i];const target=i===2?ball.position:hero.position;const d=new THREE.Vector3().subVectors(target,p.position);d.y=0;if(d.length()>1.4){d.normalize();p.position.addScaledVector(d,(i===2?3.4:2.1)*dt);p.rotation.y=Math.atan2(-d.x,-d.z)}clampPlayer(p)}
 const dist=hero.position.distanceTo(ball.position);if(dist<1.25&&ballVel.length()<5){const d=forward();ball.position.x=hero.position.x+d.x*.9;ball.position.z=hero.position.z+d.z*.9;ball.position.y=.42}
 ballVel.y-=9.8*dt;ball.position.addScaledVector(ballVel,dt);if(ball.position.y<.38){ball.position.y=.38;ballVel.y=Math.abs(ballVel.y)*.42}ballVel.x*=Math.pow(.985,dt*60);ballVel.z*=Math.pow(.985,dt*60);
@@ -96,7 +99,7 @@ if(ball.position.x>32||ball.position.x< -32)ballVel.x*=-.7;
 if(ball.position.z>19.7&&Math.abs(ball.position.x)<4)score('home');else if(ball.position.z< -19.7&&Math.abs(ball.position.x)<4)score('away');else if(Math.abs(ball.position.z)>20){ballVel.z*=-.65;ball.position.z=Math.sign(ball.position.z)*19.7}
 seam.position.copy(ball.position);seam.rotation.z+=dt*5;
 }
-const target=new THREE.Vector3(hero.position.x,0,hero.position.z+10);camera.position.lerp(new THREE.Vector3(hero.position.x,20,hero.position.z+28),.055);camera.lookAt(target);
+const focusX=THREE.MathUtils.clamp(ball.position.x*.22+hero.position.x*.12,-7,7);const focusZ=THREE.MathUtils.clamp(ball.position.z*.18,-4,4);const target=new THREE.Vector3(focusX,0,focusZ);camera.position.lerp(new THREE.Vector3(focusX,46,focusZ+36),.035);camera.lookAt(target);
 renderer.render(scene,camera)}
 requestAnimationFrame(animate);
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.7))});
