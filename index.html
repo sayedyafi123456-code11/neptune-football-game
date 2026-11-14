@@ -190,16 +190,16 @@ for(const z of [-13,0,13]){makeAdBoard('DULQUER SALMAAN · NEPTUNE FAN EDITION',
 
 const poleMat=mat(0x71838a,.45,.55),lampMat=new THREE.MeshBasicMaterial({color:0xeaffff});
 for(const x of [-38,38])for(const z of [-24,24]){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.16,.22,19,8),poleMat);pole.position.set(x,9.5,z);scene.add(pole);const bank=new THREE.Mesh(new THREE.BoxGeometry(3.2,.5,.8),lampMat);bank.position.set(x,19,z);scene.add(bank);const glow=new THREE.PointLight(0xdffcff,85,42);glow.position.set(x,18,z);scene.add(glow)}
-function player(color,x,z){
- const group=new THREE.Group(), jersey=mat(color,.5), skin=mat(0xb98262), shorts=mat(color===0xf3f4f6?0xf8f8f2:0x101b2c), socks=mat(0xf2f4f4), boots=mat(0x101316,.42), hair=mat(0x201711);
+function player(color,x,z,profile=null){
+ const group=new THREE.Group(), jersey=mat(color,.5), skin=mat(profile?.skin||0xb98262), shorts=mat(color===0xf3f4f6?0xf8f8f2:0x101b2c), socks=mat(0xf2f4f4), boots=mat(0x101316,.42), hair=mat(profile?.hair||0x201711);
  const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.29,.56,5,10),jersey);torso.position.y=1.18;torso.castShadow=true;group.add(torso);for(const stripeX of [-.16,0,.16]){const stripe=new THREE.Mesh(new THREE.BoxGeometry(.055,.58,.018),mat(color===0xf3f4f6?0xd7dce3:(stripeX===0?0xc5253d:0x173a86)));stripe.position.set(stripeX,1.18,-.285);group.add(stripe)}
  const collar=new THREE.Mesh(new THREE.TorusGeometry(.13,.035,6,16),white);collar.position.set(0,1.48,0);group.add(collar);
  const shortsMesh=new THREE.Mesh(new THREE.BoxGeometry(.48,.34,.34),shorts);shortsMesh.position.y=.67;group.add(shortsMesh);
  const neck=new THREE.Mesh(new THREE.CylinderGeometry(.09,.11,.18,10),skin);neck.position.y=1.62;group.add(neck);
  const head=new THREE.Mesh(new THREE.SphereGeometry(.205,16,14),skin);head.position.set(0,1.88,-.015);head.castShadow=true;group.add(head);
- const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.211,14,8,0,Math.PI*2,0,Math.PI*.55),hair);hairCap.position.set(0,1.94,.005);group.add(hairCap);
- const nose=new THREE.Mesh(new THREE.SphereGeometry(.045,8,8),skin);nose.scale.set(.65,.8,.8);nose.position.set(0,1.86,-.205);group.add(nose);
- const eyes=mat(0x171717);for(const ex of [-.075,.075]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.018,6,6),eyes);eye.position.set(ex,1.91,-.19);group.add(eye)}
+ const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.211,14,8,0,Math.PI*2,0,Math.PI*.55),hair);hairCap.position.set(0,1.94,.005);group.add(hairCap);if(profile?.style==="messy"){const top=new THREE.Mesh(new THREE.SphereGeometry(.19,12,8),hair);top.scale.set(1,.42,.9);top.position.set(0,2.075,.015);group.add(top)}if(profile?.style==="swept"){const top=new THREE.Mesh(new THREE.SphereGeometry(.205,12,8),hair);top.scale.set(1.05,.48,.85);top.position.set(0,2.07,.025);top.rotation.x=-.12;group.add(top);const fringe=new THREE.Mesh(new THREE.SphereGeometry(.105,10,7),hair);fringe.scale.set(1,.55,.5);fringe.position.set(.07,2.005,-.15);group.add(fringe)}if(profile?.style==="short"){const top=new THREE.Mesh(new THREE.SphereGeometry(.19,12,8),hair);top.scale.set(1,.26,.9);top.position.set(0,2.015,.01);group.add(top)}
+ const nose=new THREE.Mesh(new THREE.SphereGeometry(.045,8,8),skin);nose.scale.set(.65,.8,.8);nose.position.set(0,1.86,-.205);group.add(nose);if(profile?.beard){const beardMat=mat(profile.beardColor||0x34241e);const beard=new THREE.Mesh(new THREE.SphereGeometry(.155,12,8,0,Math.PI*2,.18,Math.PI*.72),beardMat);beard.scale.set(1,.72,.55);beard.position.set(0,1.79,-.12);group.add(beard);const moustache=new THREE.Mesh(new THREE.BoxGeometry(.16,.035,.035),beardMat);moustache.position.set(0,1.825,-.205);group.add(moustache)}
+ const eyes=mat(0x171717),brows=mat(profile?.hair||0x201711);for(const ex of [-.075,.075]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.018,6,6),eyes);eye.position.set(ex,1.91,-.19);group.add(eye);const brow=new THREE.Mesh(new THREE.BoxGeometry(.055,.012,.018),brows);brow.position.set(ex,1.945,-.19);group.add(brow)}for(const ex of [-1,1]){const ear=new THREE.Mesh(new THREE.SphereGeometry(.045,8,8),skin);ear.scale.set(.55,1,.7);ear.position.set(ex*.2,1.87,-.005);group.add(ear)}
  const arms=[],legs=[];
  for(const side of [-1,1]){
   const armPivot=new THREE.Group();armPivot.position.set(side*.34,1.39,0);const arm=new THREE.Mesh(new THREE.CapsuleGeometry(.085,.42,4,8),jersey);arm.position.y=-.24;arm.rotation.z=side*-.12;armPivot.add(arm);const hand=new THREE.Mesh(new THREE.SphereGeometry(.085,8,8),skin);hand.position.y=-.51;armPivot.add(hand);group.add(armPivot);arms.push(armPivot);
@@ -209,7 +209,7 @@ function player(color,x,z){
 }
 const hero=player(0x1649a0,0,8);
 const mateSpots=[[-18,8],[-12,1],[-6,8],[6,8],[12,1],[18,8],[-16,-8],[-5,-13],[5,-13],[16,-8]];
-const mates=mateSpots.map(([x,z])=>player(0x1649a0,x,z));
+const barcaProfiles=[{name:"Lionel Messi",skin:0xc58d6a,hair:0x493326,style:"short",beard:true,beardColor:0x594033},{name:"Neymar Jr",skin:0xb77d58,hair:0x30251f,style:"swept",beard:false},{name:"Luis Suárez",skin:0xc28b68,hair:0x30221b,style:"short",beard:true,beardColor:0x392a23}];const mates=mateSpots.map(([x,z],i)=>player(0x1649a0,x,z,barcaProfiles[i]||null));
 const rivalSpots=[[-18,-8],[-12,-1],[-6,-8],[6,-8],[12,-1],[18,-8],[-16,8],[-5,13],[5,13],[16,8],[0,-17]];
 const enemies=rivalSpots.map(([x,z])=>player(0xf3f4f6,x,z));
 const ball=new THREE.Mesh(new THREE.SphereGeometry(.38,20,16),ballMat);ball.castShadow=true;ball.position.set(0,.4,6);scene.add(ball);
