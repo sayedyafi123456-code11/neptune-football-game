@@ -80,11 +80,11 @@ const sun=new THREE.DirectionalLight(0xeaffdf,3.5);sun.position.set(-12,28,10);s
 const mat=(c,r=.8,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
 const grass1=mat(0x238a3e,.92),grass2=mat(0x2f9c4b,.92),lineMat=mat(0xf3fff6,.55),dark=mat(0x0b201d),white=mat(0xf2fff9),blue=mat(0x42d5bb,.48),red=mat(0xff765f,.5),ballMat=mat(0xffffff,.32);
 const turfCanvas=document.createElement('canvas');turfCanvas.width=512;turfCanvas.height=512;const turfCtx=turfCanvas.getContext('2d');turfCtx.fillStyle='#ffffff';turfCtx.fillRect(0,0,512,512);for(let i=0;i<11000;i++){const x=Math.random()*512,y=Math.random()*512; turfCtx.strokeStyle=i%2?'rgba(12,55,22,.20)':'rgba(205,255,190,.15)';turfCtx.lineWidth=.5+Math.random()*.8;turfCtx.beginPath();turfCtx.moveTo(x,y);turfCtx.lineTo(x+(Math.random()-.5)*2,y-2-Math.random()*5);turfCtx.stroke()}const turfTexture=new THREE.CanvasTexture(turfCanvas);turfTexture.wrapS=turfTexture.wrapT=THREE.RepeatWrapping;turfTexture.repeat.set(8,6);grass1.map=turfTexture;grass2.map=turfTexture;grass1.needsUpdate=grass2.needsUpdate=true;
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(66,42),grass1);ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;ground.position.y=-.08;scene.add(ground);
-for(let i=0;i<10;i++){const stripe=new THREE.Mesh(new THREE.PlaneGeometry(6.6,42),i%2?grass1:grass2);stripe.rotation.x=-Math.PI/2;stripe.position.set(-29.7+i*6.6,-.065,0);stripe.receiveShadow=true;scene.add(stripe)}
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(76,42),grass1);ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;ground.position.y=-.08;scene.add(ground);
+for(let i=0;i<10;i++){const stripe=new THREE.Mesh(new THREE.PlaneGeometry(7.6,42),i%2?grass1:grass2);stripe.rotation.x=-Math.PI/2;stripe.position.set(-34.2+i*7.6,-.065,0);stripe.receiveShadow=true;scene.add(stripe)}
 function line(x,z,w,h){const o=new THREE.Mesh(new THREE.PlaneGeometry(w,h),lineMat);o.rotation.x=-Math.PI/2;o.position.set(x,.006,z);scene.add(o)}
 // Correct full-size pitch markings: touchlines, goal lines and halfway line
-line(0,-20,66,.16);line(0,20,66,.16);line(-33,0,.16,40);line(33,0,.16,40);line(0,0,.13,40);
+line(0,-20,76,.16);line(0,20,76,.16);line(-38,0,.16,40);line(38,0,.16,40);line(0,0,.13,40);
 const circle=new THREE.Mesh(new THREE.RingGeometry(5.8,5.96,64),lineMat);circle.rotation.x=-Math.PI/2;circle.position.y=.012;scene.add(circle);
 // Penalty spot circles, penalty boxes, six-yard boxes and penalty D arcs
 function pitchArc(cx,cz,r,start,end){
@@ -94,16 +94,16 @@ function pitchArc(cx,cz,r,start,end){
 for(const sign of [-1,1]){
  const goalLine=sign*20, boxFront=sign*8, sixFront=sign*14, spotZ=sign*12.7;
  // 18-yard penalty area: 40 m wide x 12 m deep
- line(0,boxFront,40,.14);line(-20,sign*14,.14,12);line(20,sign*14,.14,12);
+ line(0,boxFront,46,.14);line(-23,sign*14,.14,12);line(23,sign*14,.14,12);
  // 6-yard goal area: 18 m wide x 6 m deep
- line(0,sixFront,18,.14);line(-9,sign*17,.14,6);line(9,sign*17,.14,6);
+ line(0,sixFront,21,.14);line(-10.5,sign*17,.14,6);line(10.5,sign*17,.14,6);
  const spot=new THREE.Mesh(new THREE.CircleGeometry(.16,24),lineMat);spot.rotation.x=-Math.PI/2;spot.position.set(0,.018,spotZ);scene.add(spot);
  // D-shaped penalty arc, drawn only outside the penalty area
  if(sign===1)pitchArc(0,spotZ,5.8,Math.PI+Math.asin(.81),2*Math.PI-Math.asin(.81));
  else pitchArc(0,spotZ,5.8,Math.asin(.81),Math.PI-Math.asin(.81));
 }
 // Four corner quarter-circles and visible corner flags
-for(const x of [-33,33])for(const z of [-20,20]){
+for(const x of [-38,38])for(const z of [-20,20]){
  const start=x<0?(z<0?0:Math.PI*1.5):(z<0?Math.PI*.5:Math.PI);
  pitchArc(x,z,1,start,start+Math.PI/2);
  const pole=new THREE.Mesh(new THREE.CylinderGeometry(.035,.045,1.55,8),white);pole.position.set(x,.78,z);scene.add(pole);
@@ -116,12 +116,12 @@ const stand=mat(0x17252b,.82),seatA=mat(0x284b50),seatB=mat(0x9b3542),seatC=mat(
 for(let tier=0;tier<4;tier++){
  const h=2.1+tier*.72, depth=2.2;
  for(const side of [-1,1]){
-  const slab=new THREE.Mesh(new THREE.BoxGeometry(76,1.05,depth),stand);slab.position.set(0,h,side*(24+tier*1.65));slab.castShadow=true;slab.receiveShadow=true;scene.add(slab);
+  const slab=new THREE.Mesh(new THREE.BoxGeometry(88,1.05,depth),stand);slab.position.set(0,h,side*(24+tier*1.65));slab.castShadow=true;slab.receiveShadow=true;scene.add(slab);
   for(let i=0;i<76;i++){const seat=new THREE.Mesh(new THREE.BoxGeometry(.72,.48,.72),[seatA,seatB,seatA,seatC][(i+tier*7)%4]);seat.position.set(-37.2+i*.99,h+.72,side*(24.5+tier*1.65));scene.add(seat)}
  }
  for(const side of [-1,1]){
-  const slab=new THREE.Mesh(new THREE.BoxGeometry(depth,1.05,48),stand);slab.position.set(side*(36+tier*1.6),h,0);scene.add(slab);
-  for(let i=0;i<48;i++){const seat=new THREE.Mesh(new THREE.BoxGeometry(.72,.48,.72),[seatA,seatB,seatA,seatC][(i+tier*5)%4]);seat.position.set(side*(36.5+tier*1.6),h+.72,-23.5+i*.99);scene.add(seat)}
+  const slab=new THREE.Mesh(new THREE.BoxGeometry(depth,1.05,48),stand);slab.position.set(side*(41+tier*1.6),h,0);scene.add(slab);
+  for(let i=0;i<48;i++){const seat=new THREE.Mesh(new THREE.BoxGeometry(.72,.48,.72),[seatA,seatB,seatA,seatC][(i+tier*5)%4]);seat.position.set(side*(41.5+tier*1.6),h+.72,-23.5+i*.99);scene.add(seat)}
  }
 }
 const crowdMat=[mat(0xf1f4f0),mat(0x1649a0),mat(0xc5253d),mat(0xe1bd67),mat(0x324e9a)]; const crowdFans=[];
@@ -176,7 +176,7 @@ for(let i=0;i<560;i++){const side=i%4,along=(Math.random()-.5)*(side<2?70:44),ti
 
 // Matchday upgrades: full LED perimeter walls, dugouts, referee crew and substitution board
 function ledWall(w,h,x,y,z,rot,label){const c=document.createElement('canvas');c.width=1024;c.height=128;const q=c.getContext('2d');const g=q.createLinearGradient(0,0,1024,0);g.addColorStop(0,'#07152b');g.addColorStop(.5,'#174b9b');g.addColorStop(1,'#07152b');q.fillStyle=g;q.fillRect(0,0,1024,128);q.fillStyle='#fff';q.font='900 52px Arial';q.textAlign='center';q.textBaseline='middle';q.fillText(label,512,64);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;const frame=new THREE.Mesh(new THREE.BoxGeometry(w+.18,h+.18,.16),new THREE.MeshStandardMaterial({color:0x101b2b,metalness:.6,roughness:.3}));frame.position.set(x,y,z);frame.rotation.y=rot;scene.add(frame);const panel=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));panel.position.set(x,y+.01,z);panel.rotation.y=rot;panel.position.x+=Math.abs(rot)>.5?(rot>0?-.095:.095):0;panel.position.z+=Math.abs(rot)<.5?.095:-.095;scene.add(panel)}
-ledWall(64,1.25,0,1.1,-31.5,0,'NEPTUNE  •  FC BARCELONA  •  MATCHDAY');ledWall(64,1.25,0,1.1,31.5,Math.PI,'NEPTUNE  •  FC BARCELONA  •  MATCHDAY');ledWall(38,1.25,-33.5,1.1,0,Math.PI/2,'NEPTUNE  •  MATCHDAY');ledWall(38,1.25,33.5,1.1,0,-Math.PI/2,'NEPTUNE  •  MATCHDAY');
+ledWall(64,1.25,0,1.1,-31.5,0,'NEPTUNE  •  FC BARCELONA  •  MATCHDAY');ledWall(64,1.25,0,1.1,31.5,Math.PI,'NEPTUNE  •  FC BARCELONA  •  MATCHDAY');ledWall(44,1.25,-42,1.1,0,Math.PI/2,'NEPTUNE  •  MATCHDAY');ledWall(44,1.25,42,1.1,0,-Math.PI/2,'NEPTUNE  •  MATCHDAY');
 const benchMetal=mat(0x17232d,.35,.65),benchSeat=mat(0x1649a0,.55),realSeat=mat(0xf4f4f0,.55);
 function addDugout(x,z,isHome){const side=Math.sign(z);const roof=new THREE.Mesh(new THREE.BoxGeometry(9,.18,2.1),roofMat);roof.position.set(x,2.65,z);scene.add(roof);for(const dx of [-4.35,4.35]){const post=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,.16),benchMetal);post.position.set(x+dx,1.35,z);scene.add(post)}const base=new THREE.Mesh(new THREE.BoxGeometry(8.5,.22,.9),benchMetal);base.position.set(x,.55,z);scene.add(base);for(let i=0;i<6;i++){const seat=new THREE.Mesh(new THREE.BoxGeometry(1.1,.25,.65),isHome?benchSeat:realSeat);seat.position.set(x-3.4+i*1.36,1.1,z-side*.12);scene.add(seat)}for(let i=0;i<5;i++){const sub=player(isHome?0x1649a0:0xf3f4f6,x-3+i*1.45,z-side*1.05);sub.scale.setScalar(.78);sub.rotation.y=side>0?0:Math.PI}}
 addDugout(-19,22.4,true);addDugout(19,-22.4,false);
@@ -286,18 +286,18 @@ document.getElementById('start').addEventListener('click',beginMatch);
 document.getElementById('showOnline').addEventListener('click',()=>{document.getElementById('onlinePanel').classList.add('open');document.getElementById('onlinePanel').scrollIntoView({behavior:'smooth',block:'nearest'});});
 document.getElementById('hideOnline').addEventListener('click',()=>document.getElementById('onlinePanel').classList.remove('open'));
 function animatePlayer(p,now,dt=0.016){const l=p.userData.limbs;if(!l)return;const speed=p.userData.moveSpeed||0;const intensity=THREE.MathUtils.clamp(speed/7,0,1);p.userData.gait+=dt*(4+intensity*10);const phase=p.userData.gait;const swing=Math.sin(phase)*(.035+intensity*.68);l.legs[0].rotation.x=swing;l.legs[1].rotation.x=-swing;l.arms[0].rotation.x=-swing*.62-.07;l.arms[1].rotation.x=swing*.62+.07;l.arms[0].rotation.z=-.08-intensity*.06;l.arms[1].rotation.z=.08+intensity*.06;p.position.y=Math.abs(Math.sin(phase*2))*.035*intensity;if(p.userData.body){p.userData.body.rotation.x=-intensity*.12;p.userData.body.rotation.z=Math.sin(phase)*intensity*.035}if(p.userData.head){p.userData.head.rotation.x=Math.sin(phase*2)*intensity*.025;p.userData.head.rotation.y=Math.sin(phase*.5)*.025}}
-function clampPlayer(p){p.position.x=THREE.MathUtils.clamp(p.position.x,-30,30);p.position.z=THREE.MathUtils.clamp(p.position.z,-18,18)}
+function clampPlayer(p){p.position.x=THREE.MathUtils.clamp(p.position.x,-35,35);p.position.z=THREE.MathUtils.clamp(p.position.z,-18,18)}
 function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;
 if(started){time=Math.max(0,time-dt);document.getElementById('timer').textContent=String(Math.floor(time/60)).padStart(2,'0')+':'+String(Math.floor(time%60)).padStart(2,'0');kickCooldown=Math.max(0,kickCooldown-dt);
 let ix=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+joy.x;let iz=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y;const v=new THREE.Vector3(ix,0,iz);if(v.length()>1)v.normalize();smoothMove.lerp(v,1-Math.exp(-dt*9));const sprint=(keys.shift||sprintHeld)?1.42:1;hero.position.x+=smoothMove.x*8.2*dt*sprint;hero.position.z+=smoothMove.z*8.2*dt*sprint;hero.userData.moveSpeed=smoothMove.length()*8.2*sprint;if(smoothMove.lengthSq()>.015)hero.rotation.y=THREE.MathUtils.damp(hero.rotation.y,Math.atan2(-smoothMove.x,-smoothMove.z),12,dt);clampPlayer(hero);animatePlayer(hero,now,dt);
 for(let i=0;i<mates.length;i++){const p=mates[i],spot=mateSpots[i],ballSide=ball.position.z>0?1:-1;const tx=spot[0]+THREE.MathUtils.clamp(ball.position.x*.22,-4,4)+(i%2?1:-1)*.4;const tz=spot[1]+ball.position.z*.16+(i<6?ballSide*1.2:-ballSide*.8)+Math.sin(now*.0007+i)*.35;const dx=tx-p.position.x,dz=tz-p.position.z,dist=Math.hypot(dx,dz),step=Math.min(dist,4.4*dt);if(dist>.05){p.position.x+=dx/dist*step;p.position.z+=dz/dist*step;p.rotation.y=Math.atan2(-dx,-dz)}p.userData.moveSpeed=dist>.08?4.4:0;clampPlayer(p);animatePlayer(p,now,dt)}
 for(let i=0;i<enemies.length;i++){const p=enemies[i],press=(i===0||i===2||i===6),mark=mates[(i+2)%mates.length];const target=press?ball.position:new THREE.Vector3(mark.position.x*.72,0,mark.position.z*.78-2);const dx=target.x-p.position.x,dz=target.z-p.position.z,gap=Math.hypot(dx,dz),speed=press?4.6:2.8;if(gap>.95){const step=Math.min(gap,speed*dt);p.position.x+=dx/gap*step;p.position.z+=dz/gap*step;p.rotation.y=Math.atan2(-dx,-dz);p.userData.moveSpeed=speed}else p.userData.moveSpeed=0;if(press&&gap<1.25&&ball.position.distanceTo(p.position)<1.4&&kickCooldown<=0){ballVel.set((hero.position.x-p.position.x)*.5,1.2,7);kickCooldown=.55}clampPlayer(p);animatePlayer(p,now,dt)}
 const dist=hero.position.distanceTo(ball.position);ballControlled=dist<1.9&&ballVel.length()<11;if(ballControlled){const d=forward();const pace=THREE.MathUtils.clamp(smoothMove.length(),0,1);const touch=.82+Math.sin(now*.012)*.055*pace;const targetX=hero.position.x+d.x*touch,targetZ=hero.position.z+d.z*touch;ball.position.x=THREE.MathUtils.damp(ball.position.x,targetX,17,dt);ball.position.z=THREE.MathUtils.damp(ball.position.z,targetZ,17,dt);ball.position.y=.385+Math.abs(Math.sin(now*.014))*.025*pace;ballVel.x=THREE.MathUtils.damp(ballVel.x,smoothMove.x*1.7,12,dt);ballVel.z=THREE.MathUtils.damp(ballVel.z,smoothMove.z*1.7,12,dt);ballVel.y=0}else{ballVel.y-=9.8*dt;ball.position.addScaledVector(ballVel,dt);if(ball.position.y<.38){ball.position.y=.38;ballVel.y=Math.abs(ballVel.y)*.32;if(Math.abs(ballVel.y)<.5)ballVel.y=0}ballVel.x*=Math.pow(.982,dt*60);ballVel.z*=Math.pow(.982,dt*60)}ball.rotation.x+=ballVel.z*dt*1.8;ball.rotation.z-=ballVel.x*dt*1.8;
-if(ball.position.x>32||ball.position.x< -32)ballVel.x*=-.7;
+if(ball.position.x>37||ball.position.x< -37)ballVel.x*=-.7;
 if(ball.position.z>19.7&&Math.abs(ball.position.x)<4)score('home');else if(ball.position.z< -19.7&&Math.abs(ball.position.x)<4)score('away');else if(Math.abs(ball.position.z)>20){ballVel.z*=-.65;ball.position.z=Math.sign(ball.position.z)*19.7}
 seam.position.copy(ball.position);seam.rotation.z+=dt*5;
 }
-for(let i=0;i<crowdFans.length;i++){const fan=crowdFans[i];fan.position.y=fan.userData.baseY+Math.sin(now*.003+i*.7)*.055}const officials=[referee,...assistantRefs,homeCoach,awayCoach,fourthOfficial];for(let i=0;i<officials.length;i++){const p=officials[i];if(i<3){const tx=THREE.MathUtils.clamp(ball.position.x+(i-1)*3,-29,29),tz=THREE.MathUtils.clamp(ball.position.z+(i===0?2:0),-17,17),dx=tx-p.position.x,dz=tz-p.position.z,gap=Math.hypot(dx,dz),step=Math.min(gap,(i===0?3.4:5.2)*dt);if(gap>.1){p.position.x+=dx/gap*step;p.position.z+=dz/gap*step;p.rotation.y=Math.atan2(-dx,-dz)}p.userData.moveSpeed=gap>.15?(i===0?3.4:5.2):0}else p.userData.moveSpeed=0;animatePlayer(p,now,dt)}const focusX=THREE.MathUtils.clamp(ball.position.x*.22+hero.position.x*.12,-7,7);const focusZ=THREE.MathUtils.clamp(ball.position.z*.18,-4,4);const target=new THREE.Vector3(focusX,0,focusZ);camera.position.lerp(new THREE.Vector3(focusX-34,26,focusZ),.035);camera.lookAt(target);
+for(let i=0;i<crowdFans.length;i++){const fan=crowdFans[i];fan.position.y=fan.userData.baseY+Math.sin(now*.003+i*.7)*.055}const officials=[referee,...assistantRefs,homeCoach,awayCoach,fourthOfficial];for(let i=0;i<officials.length;i++){const p=officials[i];if(i<3){const tx=THREE.MathUtils.clamp(ball.position.x+(i-1)*3,-34,34),tz=THREE.MathUtils.clamp(ball.position.z+(i===0?2:0),-17,17),dx=tx-p.position.x,dz=tz-p.position.z,gap=Math.hypot(dx,dz),step=Math.min(gap,(i===0?3.4:5.2)*dt);if(gap>.1){p.position.x+=dx/gap*step;p.position.z+=dz/gap*step;p.rotation.y=Math.atan2(-dx,-dz)}p.userData.moveSpeed=gap>.15?(i===0?3.4:5.2):0}else p.userData.moveSpeed=0;animatePlayer(p,now,dt)}const focusX=THREE.MathUtils.clamp(ball.position.x*.22+hero.position.x*.12,-7,7);const focusZ=THREE.MathUtils.clamp(ball.position.z*.18,-4,4);const target=new THREE.Vector3(focusX,0,focusZ);camera.position.lerp(new THREE.Vector3(focusX-34,26,focusZ),.035);camera.lookAt(target);
 renderer.render(scene,camera)}
 requestAnimationFrame(animate);
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.7))});
