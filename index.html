@@ -50,14 +50,14 @@
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 const root=document.getElementById('game');
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x071c1a);scene.fog=new THREE.Fog(0x071c1a,34,85);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x06101f);scene.fog=new THREE.Fog(0x071321,48,118);
 const camera=new THREE.PerspectiveCamera(54,innerWidth/innerHeight,.1,180);
-const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.28;renderer.outputColorSpace=THREE.SRGBColorSpace;root.appendChild(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xd8efff,0x17291d,2.25));
-const fill=new THREE.DirectionalLight(0xffffff,1.05);fill.position.set(15,18,-18);scene.add(fill);
-const sun=new THREE.DirectionalLight(0xe7fff0,2.6);sun.position.set(-12,25,10);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-35;sun.shadow.camera.right=35;sun.shadow.camera.top=25;sun.shadow.camera.bottom=-25;scene.add(sun);
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.38;renderer.outputColorSpace=THREE.SRGBColorSpace;root.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xdceeff,0x102719,2.05));
+const fill=new THREE.DirectionalLight(0xe4f3ff,1.35);fill.position.set(15,22,-18);scene.add(fill);
+const sun=new THREE.DirectionalLight(0xd9ffe9,3.0);sun.position.set(-12,28,10);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-35;sun.shadow.camera.right=35;sun.shadow.camera.top=25;sun.shadow.camera.bottom=-25;scene.add(sun);
 const mat=(c,r=.8,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
-const grass1=mat(0x16723d,.96),grass2=mat(0x1b7d43,.96),lineMat=mat(0xf3fff6,.55),dark=mat(0x0b201d),white=mat(0xf2fff9),blue=mat(0x42d5bb,.48),red=mat(0xff765f,.5),ballMat=mat(0xffffff,.32);
+const grass1=mat(0x126b35,.94),grass2=mat(0x218447,.94),lineMat=mat(0xf3fff6,.55),dark=mat(0x0b201d),white=mat(0xf2fff9),blue=mat(0x42d5bb,.48),red=mat(0xff765f,.5),ballMat=mat(0xffffff,.32);
 const turfCanvas=document.createElement('canvas');turfCanvas.width=256;turfCanvas.height=256;const turfCtx=turfCanvas.getContext('2d');turfCtx.fillStyle='#ffffff';turfCtx.fillRect(0,0,256,256);for(let i=0;i<1900;i++){const x=Math.random()*256,y=Math.random()*256; turfCtx.strokeStyle=i%2?'rgba(12,55,22,.20)':'rgba(205,255,190,.15)';turfCtx.lineWidth=.5+Math.random()*.8;turfCtx.beginPath();turfCtx.moveTo(x,y);turfCtx.lineTo(x+(Math.random()-.5)*2,y-2-Math.random()*5);turfCtx.stroke()}const turfTexture=new THREE.CanvasTexture(turfCanvas);turfTexture.wrapS=turfTexture.wrapT=THREE.RepeatWrapping;turfTexture.repeat.set(5,4);grass1.map=turfTexture;grass2.map=turfTexture;grass1.needsUpdate=grass2.needsUpdate=true;
 const ground=new THREE.Mesh(new THREE.PlaneGeometry(66,42),grass1);ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;ground.position.y=-.08;scene.add(ground);
 for(let i=0;i<10;i++){const stripe=new THREE.Mesh(new THREE.PlaneGeometry(6.6,42),i%2?grass1:grass2);stripe.rotation.x=-Math.PI/2;stripe.position.set(-29.7+i*6.6,-.065,0);stripe.receiveShadow=true;scene.add(stripe)}
@@ -137,6 +137,13 @@ for(let i=0;i<560;i++){const side=i%4,along=(Math.random()-.5)*(side<2?70:44),ti
    const beam=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,8),trussMat);
    beam.position.set(x,13.9,z);scene.add(beam);
   }
+ }
+ // Cinematic floodlights aimed at the playing surface
+ const floodTint=0xd9f4ff;
+ for(const spec of [[-34,15,-30,-10,0,-8],[34,15,-30,10,0,-8],[-34,15,30,-10,0,8],[34,15,30,10,0,8]]){
+  const lamp=new THREE.SpotLight(floodTint,2.1,100,Math.PI/3.1,.55,1.15);
+  lamp.position.set(spec[0],spec[1],spec[2]);lamp.target.position.set(spec[3],spec[4],spec[5]);
+  lamp.castShadow=false;scene.add(lamp);scene.add(lamp.target);
  }
  const roofLights=new THREE.MeshBasicMaterial({color:0xf4fff0});
  for(const side of [-1,1]){
