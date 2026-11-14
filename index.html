@@ -82,6 +82,45 @@ for(let tier=0;tier<4;tier++){
 const crowdMat=[mat(0xf1f4f0),mat(0x37a8a0),mat(0xc84f55),mat(0xe1bd67),mat(0x324e9a)];
 for(let i=0;i<560;i++){const side=i%4,along=(Math.random()-.5)*(side<2?70:44),tier=Math.floor(Math.random()*4),h=2.1+tier*.72;const x=side<2?along:(side===2?-1:1)*(36+tier*1.6),z=side<2?(side===0?-1:1)*(24+tier*1.65):along;const fan=new THREE.Mesh(new THREE.BoxGeometry(.28,.42,.25),crowdMat[i%crowdMat.length]);fan.position.set(x,h+1.0,z);scene.add(fan)}
 
+ // NEPTUNE grand stadium upgrade: roof canopy, upper fascia and continuous LED ribbon.
+ const roofMat=new THREE.MeshStandardMaterial({color:0x101c25,metalness:.72,roughness:.34,side:THREE.DoubleSide});
+ const roofEdge=new THREE.MeshStandardMaterial({color:0x263b48,metalness:.65,roughness:.3});
+ const ledMat=new THREE.MeshStandardMaterial({color:0x092a28,emissive:0x087c68,emissiveIntensity:.7,metalness:.25,roughness:.4});
+ for(const side of [-1,1]){
+  // Long-side cantilevered roof canopy
+  const canopy=new THREE.Mesh(new THREE.BoxGeometry(82,1.0,12),roofMat);
+  canopy.position.set(0,15.2,side*29.5);canopy.rotation.x=side*.055;canopy.castShadow=true;scene.add(canopy);
+  const fascia=new THREE.Mesh(new THREE.BoxGeometry(82,.8,.55),roofEdge);
+  fascia.position.set(0,14.5,side*35.3);scene.add(fascia);
+  const ribbon=new THREE.Mesh(new THREE.BoxGeometry(78,.72,.28),ledMat);
+  ribbon.position.set(0,6.5,side*29.2);scene.add(ribbon);
+  const strip=new THREE.Mesh(new THREE.BoxGeometry(78,.12,.18),new THREE.MeshBasicMaterial({color:0xc9ff62}));
+  strip.position.set(0,15.65,side*29.5);scene.add(strip);
+ }
+ for(const side of [-1,1]){
+  // End-stand roof sections
+  const canopy=new THREE.Mesh(new THREE.BoxGeometry(12,1.0,58),roofMat);
+  canopy.position.set(side*39.5,15.2,0);canopy.rotation.z=-side*.055;canopy.castShadow=true;scene.add(canopy);
+  const fascia=new THREE.Mesh(new THREE.BoxGeometry(.55,.8,58),roofEdge);
+  fascia.position.set(side*45.3,14.5,0);scene.add(fascia);
+  const ribbon=new THREE.Mesh(new THREE.BoxGeometry(.28,.72,54),ledMat);
+  ribbon.position.set(side*41.2,6.5,0);scene.add(ribbon);
+ }
+ // Roof trusses and bright stadium floodlight strips
+ const trussMat=new THREE.MeshStandardMaterial({color:0x71818b,metalness:.8,roughness:.25});
+ for(const z of [-34.8,34.8]){
+  for(const x of [-30,-15,0,15,30]){
+   const beam=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,8),trussMat);
+   beam.position.set(x,13.9,z);scene.add(beam);
+  }
+ }
+ const roofLights=new THREE.MeshBasicMaterial({color:0xf4fff0});
+ for(const side of [-1,1]){
+  const lights=new THREE.Mesh(new THREE.BoxGeometry(70,.18,.45),roofLights);
+  lights.position.set(0,14.15,side*28.2);scene.add(lights);
+ }
+
+
 function makeAdBoard(textValue,x,z,rotation=0){
  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=180;
  const ctx=canvas.getContext('2d');const grad=ctx.createLinearGradient(0,0,1024,180);grad.addColorStop(0,'#071b1a');grad.addColorStop(.5,'#145b4c');grad.addColorStop(1,'#071b1a');ctx.fillStyle=grad;ctx.fillRect(0,0,1024,180);ctx.strokeStyle='#c9ff62';ctx.lineWidth=9;ctx.strokeRect(7,7,1010,166);ctx.fillStyle='#e9fff3';ctx.font='900 76px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(textValue,512,91);
