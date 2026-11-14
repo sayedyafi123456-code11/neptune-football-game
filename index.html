@@ -110,13 +110,12 @@ portraitImage.onload=()=>{
  border.position.set(0,3.65,-21.79);scene.add(border);
  // Keep Naslen's LED screen fixed; rotate the pitch and stadium layout 180 degrees beneath the unchanged camera.
  screen.userData.keepFacingCamera=true;border.userData.keepFacingCamera=true;
- const halfTurn=new THREE.Matrix4().makeRotationY(Math.PI);
+ const turn=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI/2);
  for(const item of scene.children){
   if(item.userData.keepFacingCamera || item.isLight) continue;
-  item.position.applyMatrix4(halfTurn);
-  // Keep the flat grass/field markings facing upward; rotate upright objects and goal frames.
-  const isPitchSurface=Math.abs(item.rotation.x+Math.PI/2)<0.02 && item.position.y<0.2;
-  if(!isPitchSurface) item.rotation.y+=Math.PI;
+  item.position.applyQuaternion(turn);
+  item.quaternion.premultiply(turn);
+  item.updateMatrix();
  }
 };
 portraitImage.src=naslenPhoto;
