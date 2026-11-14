@@ -18,6 +18,7 @@
 #overlay{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at center,#0a332a99,#04100ff0);z-index:5;padding:20px}
 .card{width:min(440px,94vw);padding:30px;border:1px solid #baffdc55;border-radius:26px;background:linear-gradient(145deg,#102b25ed,#071513f2);box-shadow:0 25px 100px #0009;text-align:center}
 .eyebrow{font-size:10px;letter-spacing:.35em;color:var(--lime);font-weight:800}.card h1{font-size:clamp(38px,10vw,64px);letter-spacing:.12em;margin:8px 0 0;color:var(--mint)}.card p{color:#bdd5ca;line-height:1.6;font-size:13px}.play{border:0;border-radius:14px;padding:15px 34px;background:var(--lime);color:#102019;font-weight:1000;letter-spacing:.15em;font-size:14px;cursor:pointer;margin-top:12px}.foot{font-size:10px;letter-spacing:.18em;color:#87a99b;margin-top:24px}
+.brandline{font-size:10px;letter-spacing:.24em;color:#c9ff62;margin-top:5px}.rareRow{display:flex;gap:10px;justify-content:center;margin:17px 0 8px}.rareCard{width:112px;height:142px;border-radius:13px;padding:9px 7px;border:1px solid #f2d78b;background:linear-gradient(155deg,#5b4822,#151e1a 60%,#94733b);box-shadow:0 7px 22px #0008;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}.rareCard.purple{border-color:#d7a7ff;background:linear-gradient(155deg,#50306e,#171724 60%,#a16ac7)}.rarePortrait{height:72px;border-radius:9px;background:radial-gradient(circle at 50% 28%,#d9b28c 0 14%,#39251f 15% 25%,transparent 26%),linear-gradient(135deg,#c4a45d,#293c38);display:grid;place-items:center;font-size:24px;font-weight:1000;color:#fff;text-shadow:0 2px 5px #000}.purple .rarePortrait{background:radial-gradient(circle at 50% 28%,#d9b28c 0 14%,#29202f 15% 25%,transparent 26%),linear-gradient(135deg,#a06cc3,#293c58)}.rareTag{font-size:8px;letter-spacing:.2em;color:#f8df9d;font-weight:900}.rareName{font-size:12px;font-weight:1000;letter-spacing:.08em}.rareNote{font-size:8px;color:#e9ddc1;letter-spacing:.08em}
 #toast{position:fixed;top:95px;left:50%;transform:translateX(-50%);padding:9px 15px;border-radius:30px;background:#d5ff6c;color:#102019;font-size:12px;font-weight:900;opacity:0;transition:opacity .2s;pointer-events:none}
 @media(min-width:850px){.stick{width:130px;height:130px}.knob{left:43px;top:43px}.act{width:72px;height:72px}}
 @media(hover:hover) and (pointer:fine){.controls{opacity:.82}}
@@ -28,7 +29,7 @@
 <div id="game"></div>
 <div class="hud">
  <div class="top">
-  <div><div class="brand">NEPTUNE</div><div class="sub">NEPTUNE STADIUM · MATCHDAY</div></div>
+  <div><div class="brand">NEPTUNE</div><div class="sub">NEPTUNE STADIUM · MATCHDAY</div><div class="brandline">MADE BY YAFI</div></div>
   <div class="score">
    <div class="team">NEPTUNE<div class="num" id="homeScore">0</div></div>
    <div class="dash">:</div>
@@ -45,7 +46,7 @@
  </div>
 </div>
 <div id="toast">GOAL!</div>
-<div id="overlay"><div class="card"><div class="eyebrow">THE PITCH IS YOURS</div><h1>NEPTUNE</h1><p>Welcome to NEPTUNE Stadium. Create a room or join your friend's 4-digit match code.</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:16px 0"><button class="play" id="createRoom">CREATE ROOM</button></div><div style="display:flex;gap:8px;justify-content:center;align-items:center"><input id="roomInput" maxlength="4" inputmode="numeric" placeholder="4-DIGIT CODE" style="width:145px;padding:13px;border-radius:12px;border:1px solid #a8ffd866;background:#061513;color:white;text-align:center;font-size:18px;letter-spacing:.2em"><button class="play" id="joinRoom" style="margin:0;padding:13px 18px">JOIN</button></div><div id="roomStatus" style="font-size:12px;color:#c9ff62;min-height:20px;margin-top:12px">Or start a local practice match.</div><button class="play" id="start" type="button">PLAY MATCH</button><div class="foot">MADE BY YAFI FOR NAHIYAN</div></div></div>
+<div id="overlay"><div class="card"><div class="eyebrow">THE PITCH IS YOURS</div><h1>NEPTUNE</h1><div class="brandline">FOOTBALL · FAN EDITION · MADE BY YAFI</div><p>Welcome to NEPTUNE Stadium. Choose your match and build your dream squad.</p><div class="rareRow"><div class="rareCard"><div class="rareTag">RARE · 92</div><div class="rarePortrait">D</div><div class="rareName">DULQUER</div><div class="rareNote">SPECIAL GUEST · FAN CARD</div></div><div class="rareCard purple"><div class="rareTag">EPIC · 94</div><div class="rarePortrait">N</div><div class="rareName">NASLEN</div><div class="rareNote">SPECIAL GUEST · FAN CARD</div></div></div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:16px 0"><button class="play" id="createRoom">CREATE ROOM</button></div><div style="display:flex;gap:8px;justify-content:center;align-items:center"><input id="roomInput" maxlength="4" inputmode="numeric" placeholder="4-DIGIT CODE" style="width:145px;padding:13px;border-radius:12px;border:1px solid #a8ffd866;background:#061513;color:white;text-align:center;font-size:18px;letter-spacing:.2em"><button class="play" id="joinRoom" style="margin:0;padding:13px 18px">JOIN</button></div><div id="roomStatus" style="font-size:12px;color:#c9ff62;min-height:20px;margin-top:12px">Or start a local practice match.</div><button class="play" id="start" type="button">PLAY MATCH</button><div class="foot">MADE BY YAFI FOR NAHIYAN</div></div></div>
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 const root=document.getElementById('game');
@@ -80,6 +81,16 @@ for(let tier=0;tier<4;tier++){
 }
 const crowdMat=[mat(0xf1f4f0),mat(0x37a8a0),mat(0xc84f55),mat(0xe1bd67),mat(0x324e9a)];
 for(let i=0;i<560;i++){const side=i%4,along=(Math.random()-.5)*(side<2?70:44),tier=Math.floor(Math.random()*4),h=2.1+tier*.72;const x=side<2?along:(side===2?-1:1)*(36+tier*1.6),z=side<2?(side===0?-1:1)*(24+tier*1.65):along;const fan=new THREE.Mesh(new THREE.BoxGeometry(.28,.42,.25),crowdMat[i%crowdMat.length]);fan.position.set(x,h+1.0,z);scene.add(fan)}
+
+function makeAdBoard(textValue,x,z,rotation=0){
+ const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=180;
+ const ctx=canvas.getContext('2d');const grad=ctx.createLinearGradient(0,0,1024,180);grad.addColorStop(0,'#071b1a');grad.addColorStop(.5,'#145b4c');grad.addColorStop(1,'#071b1a');ctx.fillStyle=grad;ctx.fillRect(0,0,1024,180);ctx.strokeStyle='#c9ff62';ctx.lineWidth=9;ctx.strokeRect(7,7,1010,166);ctx.fillStyle='#e9fff3';ctx.font='900 76px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(textValue,512,91);
+ const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;
+ const board=new THREE.Mesh(new THREE.BoxGeometry(13,.9,.22),new THREE.MeshStandardMaterial({map:tex,emissive:0x183b2c,emissiveIntensity:.55,roughness:.6}));
+ board.position.set(x,.62,z);board.rotation.y=rotation;board.castShadow=true;scene.add(board);
+}
+for(let x=-26;x<=26;x+=13){makeAdBoard('NEPTUNE · MADE BY YAFI',x,-21,0);makeAdBoard('NEPTUNE · MADE BY YAFI',x,21,Math.PI);}
+
 const poleMat=mat(0x71838a,.45,.55),lampMat=new THREE.MeshBasicMaterial({color:0xeaffff});
 for(const x of [-38,38])for(const z of [-24,24]){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.16,.22,19,8),poleMat);pole.position.set(x,9.5,z);scene.add(pole);const bank=new THREE.Mesh(new THREE.BoxGeometry(3.2,.5,.8),lampMat);bank.position.set(x,19,z);scene.add(bank);const glow=new THREE.PointLight(0xdffcff,85,42);glow.position.set(x,18,z);scene.add(glow)}
 function player(color,x,z){
@@ -134,7 +145,7 @@ if(ball.position.x>32||ball.position.x< -32)ballVel.x*=-.7;
 if(ball.position.z>19.7&&Math.abs(ball.position.x)<4)score('home');else if(ball.position.z< -19.7&&Math.abs(ball.position.x)<4)score('away');else if(Math.abs(ball.position.z)>20){ballVel.z*=-.65;ball.position.z=Math.sign(ball.position.z)*19.7}
 seam.position.copy(ball.position);seam.rotation.z+=dt*5;
 }
-const focusX=THREE.MathUtils.clamp(ball.position.x*.22+hero.position.x*.12,-7,7);const focusZ=THREE.MathUtils.clamp(ball.position.z*.18,-4,4);const target=new THREE.Vector3(focusX,0,focusZ);camera.position.lerp(new THREE.Vector3(focusX,44,focusZ+34),.035);camera.lookAt(target);
+const focusX=THREE.MathUtils.clamp(ball.position.x*.22+hero.position.x*.12,-7,7);const focusZ=THREE.MathUtils.clamp(ball.position.z*.18,-4,4);const target=new THREE.Vector3(focusX,0,focusZ);camera.position.lerp(new THREE.Vector3(focusX,37,focusZ+28),.035);camera.lookAt(target);
 renderer.render(scene,camera)}
 requestAnimationFrame(animate);
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.7))});
