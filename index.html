@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#071a19"><title>NEPTUNE — Football</title>
+<style>
+:root{color-scheme:dark;--mint:#a8ffd8;--lime:#c9ff62;--panel:rgba(4,18,20,.78)}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071a19;font-family:Inter,system-ui,Arial;color:#fff;touch-action:none}
+#game{position:fixed;inset:0}canvas{display:block;width:100%;height:100%}
+.hud{position:fixed;inset:0;pointer-events:none;padding:clamp(12px,2.2vw,28px);display:flex;flex-direction:column;justify-content:space-between}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.brand{font-size:clamp(20px,4vw,34px);font-weight:1000;letter-spacing:.16em;color:var(--mint);text-shadow:0 3px 22px #00b88b55}.sub{font-size:9px;letter-spacing:.28em;color:#b7d2c8;margin-top:2px}
+.score{display:flex;align-items:center;gap:clamp(12px,3vw,30px);padding:10px 20px;background:var(--panel);border:1px solid #b7ffdf35;border-radius:16px;backdrop-filter:blur(12px);box-shadow:0 12px 40px #0005}
+.team{text-align:center;font-size:10px;letter-spacing:.16em;color:#c3ded4}.num{font-size:clamp(24px,5vw,42px);font-weight:900;line-height:1.1}.dash{font-size:22px;color:#79a69a}.timer{padding:8px 12px;border-radius:10px;background:#d5ff6c;color:#102019;font-weight:900;font-variant-numeric:tabular-nums;min-width:62px;text-align:center}
+.bottom{display:flex;justify-content:space-between;align-items:flex-end;gap:14px}.hint{font-size:11px;color:#c0d8cf;background:#061615a8;padding:10px 13px;border-radius:12px;border:1px solid #c8ffe322;max-width:260px;line-height:1.5}
+.controls{display:flex;align-items:flex-end;gap:12px}.stick{width:112px;height:112px;border-radius:50%;border:1px solid #d1ffdf55;background:#061b1ab0;position:relative;pointer-events:auto;touch-action:none;backdrop-filter:blur(5px)}
+.stick:before{content:"";position:absolute;inset:30px;border:1px solid #d1ffdf28;border-radius:50%}.knob{position:absolute;width:42px;height:42px;left:35px;top:35px;border-radius:50%;background:linear-gradient(145deg,#d4ff94,#60d9a4);box-shadow:0 4px 18px #65ffc866}
+.actions{display:flex;gap:9px;align-items:flex-end}.act{pointer-events:auto;touch-action:none;border:1px solid #d1ffdf66;border-radius:50%;width:64px;height:64px;background:linear-gradient(145deg,#b8ff9b,#4bd4a0);color:#082019;font-weight:1000;font-size:11px;box-shadow:0 7px 24px #0005}.act.small{width:52px;height:52px;background:#0c3029;color:#d8ffe8}
+#overlay{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at center,#0a332a99,#04100ff0);z-index:5;padding:20px}
+.card{width:min(440px,94vw);padding:30px;border:1px solid #baffdc55;border-radius:26px;background:linear-gradient(145deg,#102b25ed,#071513f2);box-shadow:0 25px 100px #0009;text-align:center}
+.eyebrow{font-size:10px;letter-spacing:.35em;color:var(--lime);font-weight:800}.card h1{font-size:clamp(38px,10vw,64px);letter-spacing:.12em;margin:8px 0 0;color:var(--mint)}.card p{color:#bdd5ca;line-height:1.6;font-size:13px}.play{border:0;border-radius:14px;padding:15px 34px;background:var(--lime);color:#102019;font-weight:1000;letter-spacing:.15em;font-size:14px;cursor:pointer;margin-top:12px}.foot{font-size:10px;letter-spacing:.18em;color:#87a99b;margin-top:24px}
+#toast{position:fixed;top:95px;left:50%;transform:translateX(-50%);padding:9px 15px;border-radius:30px;background:#d5ff6c;color:#102019;font-size:12px;font-weight:900;opacity:0;transition:opacity .2s;pointer-events:none}
+@media(min-width:850px){.stick{width:130px;height:130px}.knob{left:43px;top:43px}.act{width:72px;height:72px}}
+@media(hover:hover) and (pointer:fine){.controls{opacity:.82}}
+@media(max-width:520px){.hint{max-width:150px;font-size:9px}.score{padding:8px 11px;gap:10px}.team{font-size:8px}.timer{min-width:52px;padding:7px}.stick{width:96px;height:96px}.knob{left:27px;top:27px}.act{width:57px;height:57px}.act.small{width:45px;height:45px}}
+</style>
+</head>
+<body>
+<div id="game"></div>
+<div class="hud">
+ <div class="top">
+  <div><div class="brand">NEPTUNE</div><div class="sub">3D FOOTBALL EXPERIENCE</div></div>
+  <div class="score">
+   <div class="team">NEPTUNE<div class="num" id="homeScore">0</div></div>
+   <div class="dash">:</div>
+   <div class="team">RIVALS<div class="num" id="awayScore">0</div></div>
+   <div class="timer" id="timer">90:00</div>
+  </div>
+ </div>
+ <div class="bottom">
+  <div class="hint">WASD / ARROWS to move<br>SPACE = SHOOT · SHIFT = SPRINT<br>On mobile: joystick + action buttons</div>
+  <div class="controls">
+   <div class="stick" id="stick"><div class="knob" id="knob"></div></div>
+   <div class="actions"><button class="act small" id="pass">PASS</button><button class="act" id="shoot">SHOOT</button></div>
+  </div>
+ </div>
+</div>
+<div id="toast">GOAL!</div>
+<div id="overlay"><div class="card"><div class="eyebrow">THE PITCH IS YOURS</div><h1>NEPTUNE</h1><p>A fast 3D football match. Move your player, keep possession, and score against the rivals. Works on desktop and mobile.</p><button class="play" id="start">KICK OFF</button><div class="foot">MADE BY YAFI FOR NAHIYAN</div></div></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const root=document.getElementById('game');
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x071c1a);scene.fog=new THREE.Fog(0x071c1a,34,85);
+const camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.1,180);
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;root.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xc7ffe9,0x173328,2));
+const sun=new THREE.DirectionalLight(0xe7fff0,2.6);sun.position.set(-12,25,10);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-35;sun.shadow.camera.right=35;sun.shadow.camera.top=25;sun.shadow.camera.bottom=-25;scene.add(sun);
+const mat=(c,r=.8,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
+const grass1=mat(0x176b43),grass2=mat(0x1b784a),lineMat=mat(0xe7fff1),dark=mat(0x0b201d),white=mat(0xf2fff9),blue=mat(0x42d5bb,.48),red=mat(0xff765f,.5),ballMat=mat(0xffffff,.35);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(66,42),grass1);ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;ground.position.y=-.08;scene.add(ground);
+for(let i=0;i<10;i++){const stripe=new THREE.Mesh(new THREE.PlaneGeometry(6.6,42),i%2?grass1:grass2);stripe.rotation.x=-Math.PI/2;stripe.position.set(-29.7+i*6.6,-.065,0);stripe.receiveShadow=true;scene.add(stripe)}
+function line(x,z,w,h){const o=new THREE.Mesh(new THREE.PlaneGeometry(w,h),lineMat);o.rotation.x=-Math.PI/2;o.position.set(x,.006,z);scene.add(o)}
+line(0,-20,66,.16);line(0,20,66,.16);line(-33,0,.16,40);line(33,0,.16,40);line(0,0,.13,40);
+const circle=new THREE.Mesh(new THREE.RingGeometry(5.8,5.96,64),lineMat);circle.rotation.x=-Math.PI/2;circle.position.y=.012;scene.add(circle);
+for(const z of [-20,20]){line(0,z>0?14:-14,20,.14);line(0,z>0?14:-14,.14,12);line(-10,z>0?8:-8,.14,12);line(10,z>0?8:-8,.14,12)}
+function goal(z,dir){const g=new THREE.Group();const y=2.3;const postmat=mat(0xf4fff9,.35,.25);for(const x of [-4,4]){const p=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,y,10),postmat);p.position.set(x,y/2,z);p.castShadow=true;g.add(p)}const bar=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,8,10),postmat);bar.rotation.z=Math.PI/2;bar.position.set(0,y,z);g.add(bar);const net=new THREE.Mesh(new THREE.BoxGeometry(8,2.3,2.2),new THREE.MeshBasicMaterial({color:0xb8fff0,wireframe:true,transparent:true,opacity:.2}));net.position.set(0,1.15,z+dir*1);g.add(net);scene.add(g)}
+goal(-20,-1);goal(20,1);
+const crowdMat=[mat(0x23443c),mat(0x315b50),mat(0x203d4a),mat(0x6a5141)];
+for(let i=0;i<210;i++){const a=i/210*Math.PI*2;const radius=26+(i%3)*.5;const x=Math.cos(a)*radius*1.18,z=Math.sin(a)*radius*.82;if(Math.abs(x)<34&&Math.abs(z)<22)continue;const h=.5+(i%4)*.15;const o=new THREE.Mesh(new THREE.BoxGeometry(.35,h,.35),crowdMat[i%4]);o.position.set(x,h/2-.1,z);scene.add(o)}
+function player(color,x,z){const group=new THREE.Group();const jersey=mat(color,.55);const skin=mat(0xb77d5b);const shorts=mat(0x10231f);const body=new THREE.Mesh(new THREE.CapsuleGeometry(.48,.8,4,8),jersey);body.position.y=1.25;body.castShadow=true;group.add(body);const head=new THREE.Mesh(new THREE.SphereGeometry(.28,12,10),skin);head.position.y=2.1;head.castShadow=true;group.add(head);for(const dx of [-.23,.23]){const leg=new THREE.Mesh(new THREE.CapsuleGeometry(.14,.62,3,6),shorts);leg.position.set(dx,.42,0);group.add(leg)}group.position.set(x,0,z);scene.add(group);return group}
+const hero=player(0x37e1bb,0,8);const mates=[player(0x37e1bb,-9,2),player(0x37e1bb,9,1),player(0x37e1bb,-5,-8),player(0x37e1bb,6,-9)];
+const enemies=[player(0xff765f,-8,-3),player(0xff765f,8,-3),player(0xff765f,0,-12),player(0xff765f,-13,9),player(0xff765f,13,9)];
+const ball=new THREE.Mesh(new THREE.SphereGeometry(.38,20,16),ballMat);ball.castShadow=true;ball.position.set(0,.4,6);scene.add(ball);
+const seam=new THREE.Mesh(new THREE.TorusGeometry(.385,.012,4,24),mat(0x172522));seam.position.copy(ball.position);seam.rotation.x=Math.PI/2;scene.add(seam);
+const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space'){e.preventDefault();shoot()}if(e.key.toLowerCase()==='e')pass()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+let joy={x:0,y:0},active=false,started=false,home=0,away=0,time=90*60,last=performance.now(),ballVel=new THREE.Vector3(),kickCooldown=0;
+const stick=document.getElementById('stick'),knob=document.getElementById('knob');
+function joyMove(e){const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy;const max=r.width*.34,len=Math.hypot(dx,dy);if(len>max){dx*=max/len;dy*=max/len}joy.x=dx/max;joy.y=dy/max;knob.style.transform='translate('+dx+'px,'+dy+'px)'}
+stick.addEventListener('pointerdown',e=>{active=true;stick.setPointerCapture(e.pointerId);joyMove(e)});stick.addEventListener('pointermove',e=>{if(active)joyMove(e)});function joyEnd(){active=false;joy.x=joy.y=0;knob.style.transform='translate(0,0)'}stick.addEventListener('pointerup',joyEnd);stick.addEventListener('pointercancel',joyEnd);
+document.getElementById('shoot').addEventListener('pointerdown',shoot);document.getElementById('pass').addEventListener('pointerdown',pass);
+function forward(){const d=new THREE.Vector3(0,0,-1);d.applyAxisAngle(new THREE.Vector3(0,1,0),hero.rotation.y);return d}
+function shoot(){if(!started||kickCooldown>0)return;const d=forward();ballVel.copy(d.multiplyScalar(17));ballVel.y=3.2;kickCooldown=.35;ball.position.x=hero.position.x+d.x*.9;ball.position.z=hero.position.z+d.z*.9;ball.position.y=.55}
+function pass(){if(!started||kickCooldown>0)return;let target=mates[0];let best=999;for(const p of mates){const d=p.position.distanceTo(hero.position);if(d<best){best=d;target=p}}const d=new THREE.Vector3().subVectors(target.position,hero.position).normalize();ballVel.copy(d.multiplyScalar(11));ballVel.y=1.6;kickCooldown=.3}
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.style.opacity=1;setTimeout(()=>el.style.opacity=0,1200)}
+function resetBall(){ball.position.set(0,.4,0);ballVel.set(0,0,0);hero.position.set(0,8,0)}
+function score(team){if(team==='home'){home++;document.getElementById('homeScore').textContent=home;toast('GOAL! NEPTUNE')}else{away++;document.getElementById('awayScore').textContent=away;toast('RIVALS SCORE')}resetBall()}
+document.getElementById('start').onclick=()=>{started=true;document.getElementById('overlay').style.display='none';toast('KICK OFF!')};
+function clampPlayer(p){p.position.x=THREE.MathUtils.clamp(p.position.x,-30,30);p.position.z=THREE.MathUtils.clamp(p.position.z,-18,18)}
+function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;
+if(started){time=Math.max(0,time-dt);document.getElementById('timer').textContent=String(Math.floor(time/60)).padStart(2,'0')+':'+String(Math.floor(time%60)).padStart(2,'0');kickCooldown=Math.max(0,kickCooldown-dt);
+let ix=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+joy.x;let iz=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y;const v=new THREE.Vector3(ix,0,iz);if(v.length()>1)v.normalize();const sprint=keys.shift?1.45:1;hero.position.x+=v.x*8*dt*sprint;hero.position.z+=v.z*8*dt*sprint;if(v.lengthSq()>.01)hero.rotation.y=Math.atan2(-v.x,-v.z);clampPlayer(hero);
+for(let i=0;i<mates.length;i++){const p=mates[i],t=new THREE.Vector3((i%2?1:-1)*(7+i),0,(i<2?2:-9));p.position.lerp(t,.012);p.rotation.y=0}
+for(let i=0;i<enemies.length;i++){const p=enemies[i];const target=i===2?ball.position:hero.position;const d=new THREE.Vector3().subVectors(target,p.position);d.y=0;if(d.length()>1.4){d.normalize();p.position.addScaledVector(d,(i===2?3.4:2.1)*dt);p.rotation.y=Math.atan2(-d.x,-d.z)}clampPlayer(p)}
+const dist=hero.position.distanceTo(ball.position);if(dist<1.25&&ballVel.length()<5){const d=forward();ball.position.x=hero.position.x+d.x*.9;ball.position.z=hero.position.z+d.z*.9;ball.position.y=.42}
+ballVel.y-=9.8*dt;ball.position.addScaledVector(ballVel,dt);if(ball.position.y<.38){ball.position.y=.38;ballVel.y=Math.abs(ballVel.y)*.42}ballVel.x*=Math.pow(.985,dt*60);ballVel.z*=Math.pow(.985,dt*60);
+if(ball.position.x>32||ball.position.x< -32)ballVel.x*=-.7;
+if(ball.position.z>19.7&&Math.abs(ball.position.x)<4)score('home');else if(ball.position.z< -19.7&&Math.abs(ball.position.x)<4)score('away');else if(Math.abs(ball.position.z)>20){ballVel.z*=-.65;ball.position.z=Math.sign(ball.position.z)*19.7}
+seam.position.copy(ball.position);seam.rotation.z+=dt*5;
+}
+const target=new THREE.Vector3(hero.position.x,0,hero.position.z+10);camera.position.lerp(new THREE.Vector3(hero.position.x,20,hero.position.z+28),.055);camera.lookAt(target);
+renderer.render(scene,camera)}
+requestAnimationFrame(animate);
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.7))});
+</script>
+</body></html>
