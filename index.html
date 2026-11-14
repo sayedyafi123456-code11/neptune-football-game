@@ -205,7 +205,7 @@ function player(color,x,z,profile=null){
   const armPivot=new THREE.Group();armPivot.position.set(side*.34,1.39,0);const arm=new THREE.Mesh(new THREE.CapsuleGeometry(.085,.42,4,8),jersey);arm.position.y=-.24;arm.rotation.z=side*-.12;armPivot.add(arm);const hand=new THREE.Mesh(new THREE.SphereGeometry(.085,8,8),skin);hand.position.y=-.51;armPivot.add(hand);group.add(armPivot);arms.push(armPivot);
   const legPivot=new THREE.Group();legPivot.position.set(side*.145,.57,0);const leg=new THREE.Mesh(new THREE.CapsuleGeometry(.105,.42,4,8),skin);leg.position.y=-.24;legPivot.add(leg);const sock=new THREE.Mesh(new THREE.CylinderGeometry(.105,.11,.24,8),socks);sock.position.y=-.49;legPivot.add(sock);const boot=new THREE.Mesh(new THREE.BoxGeometry(.17,.12,.3),boots);boot.position.set(0,-.63,-.075);legPivot.add(boot);group.add(legPivot);legs.push(legPivot);
  }
- group.userData.limbs={arms,legs};group.position.set(x,0,z);scene.add(group);return group
+ group.userData.limbs={arms,legs};group.userData.body=torso;group.userData.head=head;group.userData.gait=0;group.userData.moveSpeed=0;group.position.set(x,0,z);scene.add(group);return group
 }
 const hero=player(0x1649a0,0,8);
 const mateSpots=[[-18,8],[-12,1],[-6,8],[6,8],[12,1],[18,8],[-16,-8],[-5,-13],[5,-13],[16,-8]];
@@ -229,7 +229,7 @@ function resetBall(){ball.position.set(0,.4,0);ballVel.set(0,0,0);hero.position.
 function score(team){if(team==='home'){home++;document.getElementById('homeScore').textContent=home;toast('GOAL! NEPTUNE')}else{away++;document.getElementById('awayScore').textContent=away;toast('RIVALS SCORE')}resetBall()}
 function beginMatch(){started=true;document.getElementById('overlay').style.display='none';toast('KICK OFF!')}
 document.getElementById('start').addEventListener('click',beginMatch);
-function animatePlayer(p,now){const l=p.userData.limbs;if(!l)return;const moving=p===hero?Math.min(1,Math.hypot((keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+joy.x,(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y)):0.38;const swing=Math.sin(now*.014+(p.position.x*.2))*moving*.62;l.legs[0].rotation.x=swing;l.legs[1].rotation.x=-swing;l.arms[0].rotation.x=-swing*.65;l.arms[1].rotation.x=swing*.65;}
+function animatePlayer(p,now,dt=0.016){const l=p.userData.limbs;if(!l)return;const speed=p.userData.moveSpeed||0;const intensity=THREE.MathUtils.clamp(speed/6,0,1);p.userData.gait+=dt*(5+intensity*8);const phase=p.userData.gait;const swing=Math.sin(phase)*(.08+intensity*.58);l.legs[0].rotation.x=swing;l.legs[1].rotation.x=-swing;l.arms[0].rotation.x=-swing*.72-.04;l.arms[1].rotation.x=swing*.72+.04;p.position.y=Math.abs(Math.sin(phase*2))*.045*intensity;if(p.userData.body){p.userData.body.rotation.x=-intensity*.07;p.userData.body.rotation.z=Math.sin(phase)*intensity*.025}if(p.userData.head)p.userData.head.rotation.x=Math.sin(phase*2)*intensity*.018;}
 function clampPlayer(p){p.position.x=THREE.MathUtils.clamp(p.position.x,-30,30);p.position.z=THREE.MathUtils.clamp(p.position.z,-18,18)}
 function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;
 if(started){time=Math.max(0,time-dt);document.getElementById('timer').textContent=String(Math.floor(time/60)).padStart(2,'0')+':'+String(Math.floor(time%60)).padStart(2,'0');kickCooldown=Math.max(0,kickCooldown-dt);
