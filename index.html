@@ -58,6 +58,7 @@ const fill=new THREE.DirectionalLight(0xffffff,1.05);fill.position.set(15,18,-18
 const sun=new THREE.DirectionalLight(0xe7fff0,2.6);sun.position.set(-12,25,10);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-35;sun.shadow.camera.right=35;sun.shadow.camera.top=25;sun.shadow.camera.bottom=-25;scene.add(sun);
 const mat=(c,r=.8,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
 const grass1=mat(0x16723d,.96),grass2=mat(0x1b7d43,.96),lineMat=mat(0xf3fff6,.55),dark=mat(0x0b201d),white=mat(0xf2fff9),blue=mat(0x42d5bb,.48),red=mat(0xff765f,.5),ballMat=mat(0xffffff,.32);
+const turfCanvas=document.createElement('canvas');turfCanvas.width=256;turfCanvas.height=256;const turfCtx=turfCanvas.getContext('2d');turfCtx.fillStyle='#ffffff';turfCtx.fillRect(0,0,256,256);for(let i=0;i<1900;i++){const x=Math.random()*256,y=Math.random()*256; turfCtx.strokeStyle=i%2?'rgba(12,55,22,.20)':'rgba(205,255,190,.15)';turfCtx.lineWidth=.5+Math.random()*.8;turfCtx.beginPath();turfCtx.moveTo(x,y);turfCtx.lineTo(x+(Math.random()-.5)*2,y-2-Math.random()*5);turfCtx.stroke()}const turfTexture=new THREE.CanvasTexture(turfCanvas);turfTexture.wrapS=turfTexture.wrapT=THREE.RepeatWrapping;turfTexture.repeat.set(5,4);grass1.map=turfTexture;grass2.map=turfTexture;grass1.needsUpdate=grass2.needsUpdate=true;
 const ground=new THREE.Mesh(new THREE.PlaneGeometry(66,42),grass1);ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;ground.position.y=-.08;scene.add(ground);
 for(let i=0;i<10;i++){const stripe=new THREE.Mesh(new THREE.PlaneGeometry(6.6,42),i%2?grass1:grass2);stripe.rotation.x=-Math.PI/2;stripe.position.set(-29.7+i*6.6,-.065,0);stripe.receiveShadow=true;scene.add(stripe)}
 function line(x,z,w,h){const o=new THREE.Mesh(new THREE.PlaneGeometry(w,h),lineMat);o.rotation.x=-Math.PI/2;o.position.set(x,.006,z);scene.add(o)}
@@ -77,13 +78,13 @@ for(const sign of [-1,1]){
  line(0,sixFront,18,.14);line(-9,sign*17,.14,6);line(9,sign*17,.14,6);
  const spot=new THREE.Mesh(new THREE.CircleGeometry(.16,24),lineMat);spot.rotation.x=-Math.PI/2;spot.position.set(0,.018,spotZ);scene.add(spot);
  // D-shaped penalty arc, drawn only outside the penalty area
- if(sign===1)pitchArc(0,spotZ,5.8,-Math.asin(.81),Math.asin(.81)+Math.PI);
- else pitchArc(0,spotZ,5.8,Math.PI+Math.asin(.81),2*Math.PI-Math.asin(.81));
+ if(sign===1)pitchArc(0,spotZ,5.8,Math.PI+Math.asin(.81),2*Math.PI-Math.asin(.81));
+ else pitchArc(0,spotZ,5.8,Math.asin(.81),Math.PI-Math.asin(.81));
 }
 // Four corner quarter-circles and visible corner flags
 for(const x of [-33,33])for(const z of [-20,20]){
- const sx=x<0?1:-1, sz=z<0?1:-1;
- pitchArc(x,z,1,sz<0?0:Math.PI,Math.PI/2*(sx<0?1:3)+(sz>0?Math.PI:0));
+ const start=x<0?(z<0?0:Math.PI*1.5):(z<0?Math.PI*.5:Math.PI);
+ pitchArc(x,z,1,start,start+Math.PI/2);
  const pole=new THREE.Mesh(new THREE.CylinderGeometry(.035,.045,1.55,8),white);pole.position.set(x,.78,z);scene.add(pole);
  const flag=new THREE.Mesh(new THREE.PlaneGeometry(.62,.38),x*z>0?red:blue);flag.position.set(x+(x<0?.3:-.3),1.35,z);flag.rotation.y=x<0?-.25:.25;scene.add(flag);
 }
