@@ -89,7 +89,27 @@ function makeAdBoard(textValue,x,z,rotation=0){
  const board=new THREE.Mesh(new THREE.BoxGeometry(13,.9,.22),new THREE.MeshStandardMaterial({map:tex,emissive:0x183b2c,emissiveIntensity:.55,roughness:.6}));
  board.position.set(x,.62,z);board.rotation.y=rotation;board.castShadow=true;scene.add(board);
 }
-for(let x=-26;x<=26;x+=13){makeAdBoard('NEPTUNE · MADE BY YAFI',x,-21,0);makeAdBoard('NEPTUNE · MADE BY YAFI',x,21,Math.PI);}
+for(let x=-26;x<=26;x+=13){if(x!==0)makeAdBoard('NEPTUNE · MADE BY YAFI',x,-21,0);makeAdBoard('NEPTUNE · MADE BY YAFI',x,21,Math.PI);}
+// Large portrait LED screen on the far touchline, facing the pitch and match camera
+const naslenPhoto='data:image/jpeg;base64,BASE64_PLACEHOLDER';
+const portraitCanvas=document.createElement('canvas');portraitCanvas.width=512;portraitCanvas.height=640;
+const pctx=portraitCanvas.getContext('2d');pctx.fillStyle='#071b1a';pctx.fillRect(0,0,512,640);
+const portraitImage=new Image();
+portraitImage.onload=()=>{
+ pctx.fillStyle='#c9ff62';pctx.fillRect(0,0,512,12);
+ const scale=Math.min(512/portraitImage.width,548/portraitImage.height);
+ const iw=portraitImage.width*scale,ih=portraitImage.height*scale;
+ pctx.drawImage(portraitImage,(512-iw)/2,20+(548-ih)/2,iw,ih);
+ pctx.fillStyle='#071b1a';pctx.fillRect(0,570,512,70);
+ pctx.fillStyle='#c9ff62';pctx.font='900 30px Arial';pctx.textAlign='center';pctx.fillText('NASLEN K GAFOOR',256,612);
+ const tex=new THREE.CanvasTexture(portraitCanvas);tex.colorSpace=THREE.SRGBColorSpace;
+ const frame=mat(0x102b25,.35,.35),sideMat=mat(0x102b25,.5,.2);
+ const screen=new THREE.Mesh(new THREE.BoxGeometry(5.2,6.5,.3),[sideMat,sideMat,sideMat,sideMat,new THREE.MeshStandardMaterial({map:tex,emissive:0x173b2b,emissiveIntensity:.35}),sideMat]);
+ screen.position.set(0,3.65,-21.6);screen.castShadow=true;scene.add(screen);
+ const border=new THREE.Mesh(new THREE.BoxGeometry(5.42,6.72,.12),new THREE.MeshBasicMaterial({color:0xc9ff62}));
+ border.position.set(0,3.65,-21.79);scene.add(border);screen.position.z=-21.58;
+};
+portraitImage.src=naslenPhoto;
 // Pitch-side LED advertising screens: fan-made actor features, around the touchlines
 for(const z of [-13,0,13]){makeAdBoard('DULQUER SALMAAN · NEPTUNE FAN EDITION',-34,z,Math.PI/2);makeAdBoard('NASLEN K GAFOOR · NEPTUNE FAN EDITION',34,z,-Math.PI/2);}
 
