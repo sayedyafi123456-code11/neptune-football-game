@@ -61,9 +61,32 @@ const grass1=mat(0x16723d,.96),grass2=mat(0x1b7d43,.96),lineMat=mat(0xf3fff6,.55
 const ground=new THREE.Mesh(new THREE.PlaneGeometry(66,42),grass1);ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;ground.position.y=-.08;scene.add(ground);
 for(let i=0;i<10;i++){const stripe=new THREE.Mesh(new THREE.PlaneGeometry(6.6,42),i%2?grass1:grass2);stripe.rotation.x=-Math.PI/2;stripe.position.set(-29.7+i*6.6,-.065,0);stripe.receiveShadow=true;scene.add(stripe)}
 function line(x,z,w,h){const o=new THREE.Mesh(new THREE.PlaneGeometry(w,h),lineMat);o.rotation.x=-Math.PI/2;o.position.set(x,.006,z);scene.add(o)}
+// Correct full-size pitch markings: touchlines, goal lines and halfway line
 line(0,-20,66,.16);line(0,20,66,.16);line(-33,0,.16,40);line(33,0,.16,40);line(0,0,.13,40);
 const circle=new THREE.Mesh(new THREE.RingGeometry(5.8,5.96,64),lineMat);circle.rotation.x=-Math.PI/2;circle.position.y=.012;scene.add(circle);
-for(const z of [-20,20]){line(0,z>0?14:-14,20,.14);line(0,z>0?14:-14,.14,12);line(-10,z>0?8:-8,.14,12);line(10,z>0?8:-8,.14,12)}
+// Penalty spot circles, penalty boxes, six-yard boxes and penalty D arcs
+function pitchArc(cx,cz,r,start,end){
+ const pts=[];for(let i=0;i<=48;i++){const a=start+(end-start)*i/48;pts.push(new THREE.Vector3(cx+Math.cos(a)*r,.016,cz+Math.sin(a)*r))}
+ const geo=new THREE.BufferGeometry().setFromPoints(pts);scene.add(new THREE.Line(geo,new THREE.LineBasicMaterial({color:0xf3fff6})));
+}
+for(const sign of [-1,1]){
+ const goalLine=sign*20, boxFront=sign*8, sixFront=sign*14, spotZ=sign*12.7;
+ // 18-yard penalty area: 40 m wide x 12 m deep
+ line(0,boxFront,40,.14);line(-20,sign*14,.14,12);line(20,sign*14,.14,12);
+ // 6-yard goal area: 18 m wide x 6 m deep
+ line(0,sixFront,18,.14);line(-9,sign*17,.14,6);line(9,sign*17,.14,6);
+ const spot=new THREE.Mesh(new THREE.CircleGeometry(.16,24),lineMat);spot.rotation.x=-Math.PI/2;spot.position.set(0,.018,spotZ);scene.add(spot);
+ // D-shaped penalty arc, drawn only outside the penalty area
+ if(sign===1)pitchArc(0,spotZ,5.8,-Math.asin(.81),Math.asin(.81)+Math.PI);
+ else pitchArc(0,spotZ,5.8,Math.PI+Math.asin(.81),2*Math.PI-Math.asin(.81));
+}
+// Four corner quarter-circles and visible corner flags
+for(const x of [-33,33])for(const z of [-20,20]){
+ const sx=x<0?1:-1, sz=z<0?1:-1;
+ pitchArc(x,z,1,sz<0?0:Math.PI,Math.PI/2*(sx<0?1:3)+(sz>0?Math.PI:0));
+ const pole=new THREE.Mesh(new THREE.CylinderGeometry(.035,.045,1.55,8),white);pole.position.set(x,.78,z);scene.add(pole);
+ const flag=new THREE.Mesh(new THREE.PlaneGeometry(.62,.38),x*z>0?red:blue);flag.position.set(x+(x<0?.3:-.3),1.35,z);flag.rotation.y=x<0?-.25:.25;scene.add(flag);
+}
 function goal(z,dir){const g=new THREE.Group();const y=2.3;const postmat=mat(0xf4fff9,.35,.25);for(const x of [-4,4]){const p=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,y,10),postmat);p.position.set(x,y/2,z);p.castShadow=true;g.add(p)}const bar=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,8,10),postmat);bar.rotation.z=Math.PI/2;bar.position.set(0,y,z);g.add(bar);const net=new THREE.Mesh(new THREE.BoxGeometry(8,2.3,2.2),new THREE.MeshBasicMaterial({color:0xb8fff0,wireframe:true,transparent:true,opacity:.2}));net.position.set(0,1.15,z+dir*1);g.add(net);scene.add(g)}
 goal(-20,-1);goal(20,1);
 // Modern stadium bowl, tiered stands and floodlights
