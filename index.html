@@ -31,9 +31,9 @@
  <div class="top">
   <div><div class="brand">NEPTUNE</div><div class="sub">NEPTUNE STADIUM · MATCHDAY</div><div class="brandline">MADE BY YAFI</div></div>
   <div class="score">
-   <div class="team">NEPTUNE<div class="num" id="homeScore">0</div></div>
+   <div class="team">FC BARCELONA<div class="num" id="homeScore">0</div></div>
    <div class="dash">:</div>
-   <div class="team">RIVALS<div class="num" id="awayScore">0</div></div>
+   <div class="team">REAL MADRID<div class="num" id="awayScore">0</div></div>
    <div class="timer" id="timer">90:00</div>
   </div>
  </div>
@@ -102,8 +102,8 @@ for(let tier=0;tier<4;tier++){
   for(let i=0;i<48;i++){const seat=new THREE.Mesh(new THREE.BoxGeometry(.72,.48,.72),[seatA,seatB,seatA,seatC][(i+tier*5)%4]);seat.position.set(side*(36.5+tier*1.6),h+.72,-23.5+i*.99);scene.add(seat)}
  }
 }
-const crowdMat=[mat(0xf1f4f0),mat(0x37a8a0),mat(0xc84f55),mat(0xe1bd67),mat(0x324e9a)];
-for(let i=0;i<560;i++){const side=i%4,along=(Math.random()-.5)*(side<2?70:44),tier=Math.floor(Math.random()*4),h=2.1+tier*.72;const x=side<2?along:(side===2?-1:1)*(36+tier*1.6),z=side<2?(side===0?-1:1)*(24+tier*1.65):along;const fan=new THREE.Mesh(new THREE.BoxGeometry(.28,.42,.25),crowdMat[i%crowdMat.length]);fan.position.set(x,h+1.0,z);scene.add(fan)}
+const crowdMat=[mat(0xf1f4f0),mat(0x1649a0),mat(0xc5253d),mat(0xe1bd67),mat(0x324e9a)]; const crowdFans=[];
+for(let i=0;i<560;i++){const side=i%4,along=(Math.random()-.5)*(side<2?70:44),tier=Math.floor(Math.random()*4),h=2.1+tier*.72;const x=side<2?along:(side===2?-1:1)*(36+tier*1.6),z=side<2?(side===0?-1:1)*(24+tier*1.65):along;const fan=new THREE.Mesh(new THREE.BoxGeometry(.28,.42,.25),crowdMat[i%crowdMat.length]);fan.position.set(x,h+1.0,z);fan.userData.baseY=fan.position.y;crowdFans.push(fan);scene.add(fan)}
 
  // NEPTUNE grand stadium upgrade: roof canopy, upper fascia and continuous LED ribbon.
  const roofMat=new THREE.MeshStandardMaterial({color:0x101c25,metalness:.72,roughness:.34,side:THREE.DoubleSide});
@@ -144,6 +144,17 @@ for(let i=0;i<560;i++){const side=i%4,along=(Math.random()-.5)*(side<2?70:44),ti
  }
 
 
+
+// Matchday upgrades: full LED perimeter walls, dugouts, referee crew and substitution board
+function ledWall(w,h,x,y,z,rot,label){const c=document.createElement('canvas');c.width=1024;c.height=128;const q=c.getContext('2d');const g=q.createLinearGradient(0,0,1024,0);g.addColorStop(0,'#07152b');g.addColorStop(.5,'#174b9b');g.addColorStop(1,'#07152b');q.fillStyle=g;q.fillRect(0,0,1024,128);q.fillStyle='#fff';q.font='900 52px Arial';q.textAlign='center';q.textBaseline='middle';q.fillText(label,512,64);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;const frame=new THREE.Mesh(new THREE.BoxGeometry(w+.18,h+.18,.16),new THREE.MeshStandardMaterial({color:0x101b2b,metalness:.6,roughness:.3}));frame.position.set(x,y,z);frame.rotation.y=rot;scene.add(frame);const panel=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));panel.position.set(x,y+.01,z);panel.rotation.y=rot;panel.position.x+=Math.abs(rot)>.5?(rot>0?-.095:.095):0;panel.position.z+=Math.abs(rot)<.5?.095:-.095;scene.add(panel)}
+ledWall(64,1.25,0,1.1,-21.5,0,'NEPTUNE  •  FC BARCELONA  •  MATCHDAY');ledWall(64,1.25,0,1.1,21.5,Math.PI,'NEPTUNE  •  FC BARCELONA  •  MATCHDAY');ledWall(38,1.25,-33.5,1.1,0,Math.PI/2,'NEPTUNE  •  MATCHDAY');ledWall(38,1.25,33.5,1.1,0,-Math.PI/2,'NEPTUNE  •  MATCHDAY');
+const benchMetal=mat(0x17232d,.35,.65),benchSeat=mat(0x1649a0,.55),realSeat=mat(0xf4f4f0,.55);
+function addDugout(x,z,isHome){const roof=new THREE.Mesh(new THREE.BoxGeometry(9,.18,2.1),roofMat);roof.position.set(x,2.65,z);scene.add(roof);for(const dx of [-4.35,4.35]){const post=new THREE.Mesh(new THREE.BoxGeometry(.16,2.5,.16),benchMetal);post.position.set(x+dx,1.35,z);scene.add(post)}const base=new THREE.Mesh(new THREE.BoxGeometry(8.5,.22,.9),benchMetal);base.position.set(x,.55,z);scene.add(base);for(let i=0;i<6;i++){const seat=new THREE.Mesh(new THREE.BoxGeometry(1.1,.25,.65),isHome?benchSeat:realSeat);seat.position.set(x-3.4+i*1.36,1.1,z-.12);scene.add(seat)}for(let i=0;i<5;i++){const sub=player(isHome?0x1649a0:0xf3f4f6,x-3+i*1.45,z+1.05);sub.scale.setScalar(.78);sub.rotation.y=Math.PI}}
+addDugout(-19,25.5,true);addDugout(19,25.5,false);
+function official(x,z,color,scale=1){const p=player(color,x,z);p.scale.setScalar(scale);return p}
+const referee=official(-1,1,0xe9c52b,1),assistantRefs=[official(-30,-16,0xe9c52b,.9),official(30,16,0xe9c52b,.9)],homeCoach=official(-23,24.1,0x152b4e,.9),awayCoach=official(23,24.1,0x222222,.9),fourthOfficial=official(27,23.3,0x202a30,.9);
+const subC=document.createElement('canvas');subC.width=256;subC.height=160;const subX=subC.getContext('2d');subX.fillStyle='#101820';subX.fillRect(0,0,256,160);subX.textAlign='center';subX.font='900 72px Arial';subX.fillStyle='#ff342e';subX.fillText('↑',128,72);subX.fillStyle='#39ff73';subX.fillText('↓',128,145);const subT=new THREE.CanvasTexture(subC);const subBoard=new THREE.Mesh(new THREE.BoxGeometry(.12,1.25,.85),new THREE.MeshBasicMaterial({map:subT}));subBoard.position.set(27,2.1,24.5);scene.add(subBoard);
+
 function makeAdBoard(textValue,x,z,rotation=0){
  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=180;
  const ctx=canvas.getContext('2d');const grad=ctx.createLinearGradient(0,0,1024,180);grad.addColorStop(0,'#071b1a');grad.addColorStop(.5,'#145b4c');grad.addColorStop(1,'#071b1a');ctx.fillStyle=grad;ctx.fillRect(0,0,1024,180);ctx.strokeStyle='#c9ff62';ctx.lineWidth=9;ctx.strokeRect(7,7,1010,166);ctx.fillStyle='#e9fff3';ctx.font='900 76px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(textValue,512,91);
@@ -180,8 +191,8 @@ for(const z of [-13,0,13]){makeAdBoard('DULQUER SALMAAN · NEPTUNE FAN EDITION',
 const poleMat=mat(0x71838a,.45,.55),lampMat=new THREE.MeshBasicMaterial({color:0xeaffff});
 for(const x of [-38,38])for(const z of [-24,24]){const pole=new THREE.Mesh(new THREE.CylinderGeometry(.16,.22,19,8),poleMat);pole.position.set(x,9.5,z);scene.add(pole);const bank=new THREE.Mesh(new THREE.BoxGeometry(3.2,.5,.8),lampMat);bank.position.set(x,19,z);scene.add(bank);const glow=new THREE.PointLight(0xdffcff,85,42);glow.position.set(x,18,z);scene.add(glow)}
 function player(color,x,z){
- const group=new THREE.Group(), jersey=mat(color,.5), skin=mat(0xb98262), shorts=mat(0x101b2c), socks=mat(0xf2f4f4), boots=mat(0x101316,.42), hair=mat(0x201711);
- const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.29,.56,5,10),jersey);torso.position.y=1.18;torso.castShadow=true;group.add(torso);
+ const group=new THREE.Group(), jersey=mat(color,.5), skin=mat(0xb98262), shorts=mat(color===0xf3f4f6?0xf8f8f2:0x101b2c), socks=mat(0xf2f4f4), boots=mat(0x101316,.42), hair=mat(0x201711);
+ const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.29,.56,5,10),jersey);torso.position.y=1.18;torso.castShadow=true;group.add(torso);for(const stripeX of [-.16,0,.16]){const stripe=new THREE.Mesh(new THREE.BoxGeometry(.055,.58,.018),mat(color===0xf3f4f6?0xd7dce3:(stripeX===0?0xc5253d:0x173a86)));stripe.position.set(stripeX,1.18,-.285);group.add(stripe)}
  const collar=new THREE.Mesh(new THREE.TorusGeometry(.13,.035,6,16),white);collar.position.set(0,1.48,0);group.add(collar);
  const shortsMesh=new THREE.Mesh(new THREE.BoxGeometry(.48,.34,.34),shorts);shortsMesh.position.y=.67;group.add(shortsMesh);
  const neck=new THREE.Mesh(new THREE.CylinderGeometry(.09,.11,.18,10),skin);neck.position.y=1.62;group.add(neck);
@@ -196,11 +207,11 @@ function player(color,x,z){
  }
  group.userData.limbs={arms,legs};group.position.set(x,0,z);scene.add(group);return group
 }
-const hero=player(0x37e1bb,0,8);
+const hero=player(0x1649a0,0,8);
 const mateSpots=[[-18,8],[-12,1],[-6,8],[6,8],[12,1],[18,8],[-16,-8],[-5,-13],[5,-13],[16,-8]];
-const mates=mateSpots.map(([x,z])=>player(0x37e1bb,x,z));
+const mates=mateSpots.map(([x,z])=>player(0x1649a0,x,z));
 const rivalSpots=[[-18,-8],[-12,-1],[-6,-8],[6,-8],[12,-1],[18,-8],[-16,8],[-5,13],[5,13],[16,8],[0,-17]];
-const enemies=rivalSpots.map(([x,z])=>player(0xff765f,x,z));
+const enemies=rivalSpots.map(([x,z])=>player(0xf3f4f6,x,z));
 const ball=new THREE.Mesh(new THREE.SphereGeometry(.38,20,16),ballMat);ball.castShadow=true;ball.position.set(0,.4,6);scene.add(ball);
 const seam=new THREE.Mesh(new THREE.TorusGeometry(.385,.012,4,24),mat(0x172522));seam.position.copy(ball.position);seam.rotation.x=Math.PI/2;scene.add(seam);
 const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.code==='Space'){e.preventDefault();shoot()}if(e.key.toLowerCase()==='e')pass()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
@@ -223,15 +234,15 @@ function clampPlayer(p){p.position.x=THREE.MathUtils.clamp(p.position.x,-30,30);
 function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-last)/1000,.04);last=now;
 if(started){time=Math.max(0,time-dt);document.getElementById('timer').textContent=String(Math.floor(time/60)).padStart(2,'0')+':'+String(Math.floor(time%60)).padStart(2,'0');kickCooldown=Math.max(0,kickCooldown-dt);
 let ix=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+joy.x;let iz=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0)+joy.y;const v=new THREE.Vector3(ix,0,iz);if(v.length()>1)v.normalize();const sprint=(keys.shift||sprintHeld)?1.45:1;hero.position.x+=v.x*8*dt*sprint;hero.position.z+=v.z*8*dt*sprint;if(v.lengthSq()>.01)hero.rotation.y=Math.atan2(-v.x,-v.z);clampPlayer(hero);animatePlayer(hero,now);
-for(let i=0;i<mates.length;i++){const p=mates[i],spot=mateSpots[i];const t=new THREE.Vector3(spot[0]+Math.sin(now*.00045+i)*1.2,0,spot[1]+Math.cos(now*.0004+i)*.8);p.position.lerp(t,.012);p.rotation.y=0;animatePlayer(p,now)}
-for(let i=0;i<enemies.length;i++){const p=enemies[i];const target=i===2?ball.position:hero.position;const d=new THREE.Vector3().subVectors(target,p.position);d.y=0;if(d.length()>1.4){d.normalize();p.position.addScaledVector(d,(i===2?3.4:2.1)*dt);p.rotation.y=Math.atan2(-d.x,-d.z)}clampPlayer(p);animatePlayer(p,now)}
-const dist=hero.position.distanceTo(ball.position);if(dist<1.25&&ballVel.length()<5){const d=forward();ball.position.x=hero.position.x+d.x*.9;ball.position.z=hero.position.z+d.z*.9;ball.position.y=.42}
+for(let i=0;i<mates.length;i++){const p=mates[i],spot=mateSpots[i];const t=new THREE.Vector3(spot[0]+Math.sin(now*.00045+i)*1.2,0,spot[1]+Math.cos(now*.0004+i)*.8);p.position.lerp(t,.012);if(Math.hypot(t.x-p.position.x,t.z-p.position.z)>.05)p.rotation.y=Math.atan2(-(t.x-p.position.x),-(t.z-p.position.z));animatePlayer(p,now)}
+for(let i=0;i<enemies.length;i++){const p=enemies[i];const target=(i%4===0||i===2)?ball.position:hero.position;const d=new THREE.Vector3().subVectors(target,p.position);d.y=0;const gap=d.length();if(gap>1.25){d.normalize();p.position.addScaledVector(d,(i===2?4.2:2.55)*dt);p.rotation.y=Math.atan2(-d.x,-d.z)}else if(gap<1.25&&ball.position.distanceTo(p.position)<1.4&&kickCooldown<=0){ballVel.set(0,1.5,8);kickCooldown=.45}clampPlayer(p);animatePlayer(p,now)}
+const dist=hero.position.distanceTo(ball.position);if(dist<1.65&&ballVel.length()<7){const d=forward();ball.position.x=hero.position.x+d.x*.95;ball.position.z=hero.position.z+d.z*.95;ball.position.y=.42;ballVel.multiplyScalar(.25)}
 ballVel.y-=9.8*dt;ball.position.addScaledVector(ballVel,dt);if(ball.position.y<.38){ball.position.y=.38;ballVel.y=Math.abs(ballVel.y)*.42}ballVel.x*=Math.pow(.985,dt*60);ballVel.z*=Math.pow(.985,dt*60);
 if(ball.position.x>32||ball.position.x< -32)ballVel.x*=-.7;
 if(ball.position.z>19.7&&Math.abs(ball.position.x)<4)score('home');else if(ball.position.z< -19.7&&Math.abs(ball.position.x)<4)score('away');else if(Math.abs(ball.position.z)>20){ballVel.z*=-.65;ball.position.z=Math.sign(ball.position.z)*19.7}
 seam.position.copy(ball.position);seam.rotation.z+=dt*5;
 }
-const focusX=THREE.MathUtils.clamp(ball.position.x*.22+hero.position.x*.12,-7,7);const focusZ=THREE.MathUtils.clamp(ball.position.z*.18,-4,4);const target=new THREE.Vector3(focusX,0,focusZ);camera.position.lerp(new THREE.Vector3(focusX,37,focusZ+28),.035);camera.lookAt(target);
+for(let i=0;i<crowdFans.length;i++){const fan=crowdFans[i];fan.position.y=fan.userData.baseY+Math.sin(now*.003+i*.7)*.055}for(const p of [referee,...assistantRefs,homeCoach,awayCoach,fourthOfficial]){p.rotation.y+=Math.sin(now*.0012+p.position.x)*.0008;animatePlayer(p,now)}const focusX=THREE.MathUtils.clamp(ball.position.x*.22+hero.position.x*.12,-7,7);const focusZ=THREE.MathUtils.clamp(ball.position.z*.18,-4,4);const target=new THREE.Vector3(focusX,0,focusZ);camera.position.lerp(new THREE.Vector3(focusX,37,focusZ+28),.035);camera.lookAt(target);
 renderer.render(scene,camera)}
 requestAnimationFrame(animate);
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.7))});
